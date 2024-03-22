@@ -2,10 +2,6 @@ import re
 
 import SenateSQLDB
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
 
 def loadsenateregexes():
 
@@ -19,7 +15,6 @@ def loadsenateregexes():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
 
     # Get list of senate common phrase regexes
     senateregexes = loadsenateregexes()
