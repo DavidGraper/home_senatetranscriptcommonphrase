@@ -37,3 +37,14 @@ class SenateTranscriptRawText(SqlBase):
         query = "INSERT INTO pdftext (filename, pagenumber, linenumber, text) values ('{0}', {1}, {2}, '{3}')".format(filename, pagenumber, linenumber, text)
 
         return self.execute(query)
+
+
+
+class SenateTranscriptPDFLines(SqlBase):
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def get_pdflines(self, transcriptlineid):
+        query = "SELECT pdfpage, pdfline, pdftext FROM transcriptlinepdfbreaks WHERE transcriptlineid={0}".format(transcriptlineid)
+        return self.select_all(query)
+
