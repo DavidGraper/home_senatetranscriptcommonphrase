@@ -3,7 +3,9 @@
 ^(Madam|Mr\.) President(, |--)I( now)? offer( up)? the following amendments\.$
 ^(Madam|Mr\.) President(\.| --)$
 ^(Madam|Mr\.) President, (will|would) the sponsor continue to yield(\.|\?)$
+^(Madam|Mr\.) President, I vote aye\.$
 ^(Madam|Mr\.) President, are there any substitutions at the desk\?$
+^(Madam|Mr\.) President, can we take up the supplemental calendar, please\.$
 ^(Madam|Mr\.) President, if (through you )?the (Senator|sponsor) would continue to yield\.$
 ^(Madam|Mr\.) President, if we could go to the noncontroversial reading of the calendar\.$
 ^(Madam|Mr\.) President, is there( a | any )(message of necessity|further business|housekeeping) at the desk\?$
@@ -11,24 +13,31 @@
 ^(Madam|Mr\.) President, there will be an immediate meeting of the Rules Committee in the Majority Conference Room\.$
 ^(Madam|Mr\.) President, through you, if the sponsor would continue to yield\.$
 ^(Madam|Mr\.) President, to explain my vote\.$
+^(So the|The) Senate will stand at ease\.$
 ^(The Secretary will ring the bell\.\s+)?The Secretary will read\.$
+^Absolutely, (Madam|Mr\.) President\.$
 ^Absolutely.$
 ^All in favor (of (?:accepting|adopting)*\s*the ((?i)resolution(?: Calendar)*|report of the Rules Committee|message of necessity|Committee on Rules report)( please)?)?\s*signify by saying aye.$
 ^All right.$
 ^All those in favor of accepting the (message of necessity|report of the Rules Committee) signify by saying aye.$
+^All those in favor of accepting the message of necessity please signify by saying aye\.$
 ^Amendments received.$
 ^And through you, (Madam|Mr.) President, if the sponsor would continue to yield.$
 ^Announce the result(s)?( when tabulated)?\.( The bill is passed\.)?$
+^Applause\.$
 ^Ayes(,)?( \d\d)\.$
 ^By all means\.$
 ^Call the roll( on reconsideration| on the resolution|, please)?\.( Announce the results\.)?$
 ^Certainly(, Mr. President|, Madam President)?\.$
+^Cheers; applause\.$
+^Communications and reports from state officers\.$
 ^Does the (Senator|sponsor)( continue to)? yield\?( The sponsor yields)?$
 ^Excuse me(\.|\?)$
 ^Explanation(, Mr\. President|, please)?\.$
 ^Go ahead(, Senator( \w+)?)?\.$
 ^Hearing no objection, the Journal will stand approved as read. The order of business: Presentation of petitions. Messages from the Assembly. Messages from the Governor. Reports of standing committees. Reports of select committees. Communications and reports from state officers. Motions and resolutions. Calendar. Special orders. Committee notices. There being no further business to come before the Senate, we'll stand adjourned.$
 ^Here\.$
+^I ask everyone present to please rise and recite the Pledge of Allegiance.$
 ^I do(, Mr. President)?\.$
 ^I move (to|we) accept the (report of the Rules Committee|message).$
 ^I now move to reconsider the vote by which (the|this) bill was passed\.$
@@ -37,6 +46,7 @@
 ^I( now)? offer the following amendments\.$
 ^I( will)? yield\.$
 ^If the (Senator|sponsor) (would|will) continue to yield\.$
+^In Senate, (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), (January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, (19|20)\d{2}, the Senate met pursuant to adjournment.$
 ^In the absence of clergy, (let us|may we)( please)? bow our heads in a moment of (silent|silence)( reflection or prayer|, please| please)?\.$
 ^Is there a message( of necessity)? at the desk\?$
 ^Is there any (further business|housekeeping) at the desk\?$
@@ -45,42 +55,55 @@
 ^I’d be happy to\.$
 ^Laid aside\.$
 ^Last section\.$
+^Laughter\.$
+^Laughter\; applause\.$
 ^Lay (it|that bill|that|the bill) aside( for the day| temporarily)?(, please)?\.$
 ^Lay aside(, please)?\.$
+^Messages from the Assembly\.$
+^Messages from the Governor\.$
+^Motions and resolutions\.$
 ^Motions and resolutions\.$
 ^Move (the|to|we) accept( the message| the report of the Rules Committee)?\.$
 ^Move confirmation(\.|, please\.)$
 ^Move the nomination(s)?\.$
+^Move to accept the message of necessity\.$
 ^Move to reconsider the vote by which the bill was passed\.$
 ^Nay\.$
+^No response\.$
 ^No(, there is not|, there isn't, Senator| objection)?\.$
 ^O\.K\.$
 ^Of course\.$
 ^Okay\.$
+^On motion, the Senate adjourned\.$
 ^On the bill(, Madam President|, Mr\. President)?\.$
 ^On the resolution, all in favor signify by saying aye\.$
 ^Opposed( nay|, nay)?(\.|\?)$
 ^Pardon me\?$
 ^Party vote in the (affirmative|negative)\.$
+^Please rise and be recognized\.$
 ^Point of order\.$
 ^Present\.$
+^Presentation of petitions\.$
 ^Question is on the resolution\. All those in favor signify by saying aye\.$
 ^Read the last section, please\.$
 ^Read the last section. act shall take effect immediately\. Call the roll\.$
 ^Read the last section\.$
 ^Reading of the Journal\.$
 ^Record the negatives and announce the results\.$
+^Reports of select committees\.$
 ^Reports of standing committees\. The Secretary will read\.$
+^Reports of standing committees\.$
 ^Request a show of hands\.$
+^Response of \"?(Aye|Nay)\.?\"?\.?$
 ^Results\.$
 ^Right\.$
 ^Secretary will (call|read)( the )?(roll on reconsideration|controversial calendar|last section|non-controversial calendar|title)?\.$
 ^Section [0-9]{1,2}\. +This act shall take effect (immediately|on the [0-9]{1,3}th day|on the (first|1st) (day )?of (January|February|March|April|May|June|July|August|September|October|November|December))( after it shall have become a law)?\.$
 ^Senate will come to order\. The Secretary will begin by reading the Journal\.$
-^Senator \w+$
 ^Senator [name] to explain (his|her|their) vote\.$
 ^Senator \w+ to be recorded in the (negative|affirmative)\.\s+Announce the results\.$
 ^Senator \w+ to explain (his|her|their) vote\.$
+^Senator \w+$
 ^Senator \w+, (do you( continue to)? yield)\?$
 ^Senator \w+, (will|do) you (continue to )?yield\?$
 ^Senator \w+, on the bill\.$
@@ -90,6 +113,7 @@
 ^Slow roll call\.$
 ^So ordered, Senator [name]\.$
 ^So ordered\.$
+^Standing ovation\.$
 ^Substitution(s)? (is |so )?ordered\.( The Secretary will read\.| Secretary will read the title)?$
 ^Sure(ly)?\.$
 ^Thank you very much\.$
@@ -106,7 +130,9 @@
 ^That bill is passed\.$
 ^That('s| is) correct\.$
 ^That’s right\.$
+^The Journal of (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), (January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, (19|20)\d{2}, was read and approved\.$
 ^The Resolution Calendar is adopted\.  Senator \w+\.$
+^The Resolution Calendar is adopted\.$
 ^The Secretary will announce the results\.$
 ^The Secretary will call the roll( (on|upon) reconsideration)?\.$
 ^The Secretary will continue to read\.$
@@ -114,11 +140,14 @@
 ^The Secretary will read the non(-)?controversial calendar\.$
 ^The Secretary will read the title( of the bill)?\.$
 ^The Secretary will read\.$
+^The Secretary will ring the bell\."$
 ^The Senate stands at ease\.$
 ^The Senate will (please )?come to order\.\s+I ask (all present|everyone)( present)? to please rise and (join with me as we )?(recite|repeat)( with me)? the Pledge of Allegiance( to our Flag)?\.$
 ^The Senate will come to order\.$
+^The Senate will come to order\.$
 ^The Senate will come to order\.\s+Senator \w+\.$
 ^The Senate will come to order\.\s+The Secretary will begin by reading the Journal\.$
+^The Senate will return to order\.$
 ^The Senate will return to order\.\s+Senator Gianaris\.$
 ^The Senate will stand at ease\.$
 ^The Senator (continues to )?yield(s)?\.$
@@ -130,9 +159,11 @@
 ^The bill is restored to its place on the Third Reading Calendar\.$
 ^The bill passes\.$
 ^The bill will be laid aside for the day\.$
+^The message is accepted, and the bill is before the house\.$
 ^The message is accepted\.\s+(The bill is before the house\.\s+)?Read the last section\.$
 ^The motion to override the Governor's (line-item )?veto(es)? is carried\.$
 ^The nominee is hereby confirmed\.\s+The Secretary will read\.$
+^The question is on the resolution\.$
 ^The question is on the resolution\.\s+All (those\s+)?in favor signify by saying aye\.$
 ^The reading of the Journal\.(\s+The Secretary will read\.)?$
 ^The resolution is adopted\.(\s+Senator \w+\.)?$
@@ -151,11 +182,19 @@
 ^Those opposed, nay\.$
 ^Through you, (Madam|Mr\.) President(, on the bill|, yes)?\.$
 ^Through you, (Madam|Mr\.) President, (will|if|would) the sponsor (will |would )?continue to yield(\.|\?)$
+^Through you, (Madam|Mr\.) President, if the Senator will continue to yield\.$
 ^To explain my vote(, (Madam|Mr\.) President)?\.$
+^To our guests, we welcome you on behalf of the Senate\.$
+^Upon review of the amendment, in accordance with Rule 6, Section 4B, I rule it nongermane and out of order at this time\.$
+^We extend to you the privileges and courtesies of the house\.$
 ^We will return to motions and resolutions\.$
+^Whereupon, the Senate reconvened at \d{1,2}:\d{2} (a|p)\.m\.$
+^Whereupon, the Senate stood at ease at \d{1,2}:\d{2} (a|p)\.m\.$
+^Whereupon, the assemblage recited the Pledge of Allegiance to the Flag.$
 ^Will the (Senator|sponsor) (continue to )?yield( to a question| for a question)?(\?|\.)$
 ^Will the sponsor yield\?\s+The sponsor yields\.$
 ^Without objection, so ordered\.(\s+Announce the results\.)?$
+^Without objection, the Journal stands approved as read\.$
 ^Without objection, the Journal stands approved as read\.\s+Presentation of petitions\.\s+Messages from the Assembly\.\s(Messages from the Governor\.\s+Reports of standing committees\.\s)?The Secretary will read\.$
 ^Without objection, the Journal stands approved as read\.\s+Presentation of petitions\.\s+Messages from the Assembly\.\s+Messages from the Governor\.\s+Reports of standing committees\.\s+(Reports of select committees\.\s+)?(Communications and reports from state officers\.\s+)?Motions and resolutions\.\s+Senator .*$
 ^Without objection\.$
