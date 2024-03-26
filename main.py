@@ -28,6 +28,7 @@ def highlight_pdffile(pdffilelines):
         # the_rect = page.search_for(text2update)
         the_rect = page.search_for(text2update, clip=cliprect[0])
 
+
         # highlight = page.add_squiggly_annot(the_rect)
         highlight = page.add_highlight_annot(the_rect)
 
