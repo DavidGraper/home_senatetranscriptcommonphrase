@@ -11,6 +11,9 @@ def highlight_pdffile(pdffilelines):
         line2update = int(info["pdfline"]) - 1
         text2update = info["pdftext"]
 
+        # Hack 032724
+        page2update -= 1
+
         # Search for text
         page = pdfDoc[page2update]
 
@@ -26,7 +29,10 @@ def highlight_pdffile(pdffilelines):
         cliprect = page.search_for(needle)
 
         # the_rect = page.search_for(text2update)
-        the_rect = page.search_for(text2update, clip=cliprect[0])
+        try:
+            the_rect = page.search_for(text2update, clip=cliprect[0])
+        except:
+            print("Fail on page.search_for '{0}'".format(text2update))
 
 
         # highlight = page.add_squiggly_annot(the_rect)
@@ -43,7 +49,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2023-05-02_highlighted.pdf", mode='wb') as f:
+    with open("2024-03-20_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -60,7 +66,7 @@ def loadsenateregexes():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    pdfDoc = fitz.open("2023-05-02.pdf")  # open a document
+    pdfDoc = fitz.open("2024-03-20.pdf")  # open a document
 
     # Save the generated PDF to memory buffer
     output_buffer = BytesIO()
@@ -71,7 +77,7 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, text from transcriptlines where date='2023-05-02'")
+    transcriptlines = sql1.select_all("select id, text from transcriptlines where date='2024-03-20'")
 
     transcriptlinecount = 0
     matchlinecount = 0
@@ -85,6 +91,8 @@ if __name__ == '__main__':
         for senateregex in senateregexes:
 
             # print(senateregex)
+            # if senateregex == "^The Senate will come to order\.$":
+            #     i = 10
 
             if re.match(senateregex, transcriptline['text']):
 

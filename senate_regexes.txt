@@ -1,8 +1,10 @@
+^(And that, )?(Madam |Mr\. ) President, if you could please afford them all privileges and courtesies of this house.$
 ^(Madam|Mr\.) President(, |--)I( now)? move to (accept|override) the (report of the Rules Committee|Governor's line-item veto)\.$
 ^(Madam|Mr\.) President(, |--)I( now)? move to (accept|override|reconsider) the vote by which (the|this) bill was passed\.$
 ^(Madam|Mr\.) President(, |--)I( now)? offer( up)? the following amendments\.$
 ^(Madam|Mr\.) President(\.| --)$
 ^(Madam|Mr\.) President, (will|would) the sponsor continue to yield(\.|\?)$
+^(Madam|Mr\.) President, I vote aye on the resolution\.$
 ^(Madam|Mr\.) President, I vote aye\.$
 ^(Madam|Mr\.) President, are there any substitutions at the desk\?$
 ^(Madam|Mr\.) President, can we take up the supplemental calendar, please\.$
@@ -34,10 +36,11 @@
 ^Does the (Senator|sponsor)( continue to)? yield\?( The sponsor yields)?$
 ^Excuse me(\.|\?)$
 ^Explanation(, Mr\. President|, please)?\.$
+^Extended standing ovation\.$
 ^Go ahead(, Senator( \w+)?)?\.$
 ^Hearing no objection, the Journal will stand approved as read. The order of business: Presentation of petitions. Messages from the Assembly. Messages from the Governor. Reports of standing committees. Reports of select committees. Communications and reports from state officers. Motions and resolutions. Calendar. Special orders. Committee notices. There being no further business to come before the Senate, we'll stand adjourned.$
 ^Here\.$
-^I ask everyone present to please rise and recite the Pledge of Allegiance.$
+^I ask everyone (present )?to please rise and recite the Pledge of Allegiance.$
 ^I do(, Mr. President)?\.$
 ^I move (to|we) accept the (report of the Rules Committee|message).$
 ^I now move to reconsider the vote by which (the|this) bill was passed\.$
@@ -144,7 +147,6 @@
 ^The Senate stands at ease\.$
 ^The Senate will (please )?come to order\.\s+I ask (all present|everyone)( present)? to please rise and (join with me as we )?(recite|repeat)( with me)? the Pledge of Allegiance( to our Flag)?\.$
 ^The Senate will come to order\.$
-^The Senate will come to order\.$
 ^The Senate will come to order\.\s+Senator \w+\.$
 ^The Senate will come to order\.\s+The Secretary will begin by reading the Journal\.$
 ^The Senate will return to order\.$
@@ -186,7 +188,7 @@
 ^To explain my vote(, (Madam|Mr\.) President)?\.$
 ^To our guests, we welcome you on behalf of the Senate\.$
 ^Upon review of the amendment, in accordance with Rule 6, Section 4B, I rule it nongermane and out of order at this time\.$
-^We extend to you the privileges and courtesies of the house\.$
+^We extend to you the privileges and courtesies of (this|the) house\.$
 ^We will return to motions and resolutions\.$
 ^Whereupon, the Senate reconvened at \d{1,2}:\d{2} (a|p)\.m\.$
 ^Whereupon, the Senate stood at ease at \d{1,2}:\d{2} (a|p)\.m\.$
