@@ -11,13 +11,16 @@ def highlight_pdffile(pdffilelines):
         line2update = int(info["pdfline"]) - 1
         text2update = info["pdftext"]
 
+        if text2update == "Response of Aye.":
+            i = 10;
+
         # Hack 032724
         page2update -= 1
 
         # Search for text
         page = pdfDoc[page2update]
 
-        # Get page lines
+        # Get pa:ge lines
         page_lines = page.get_text("text").split('\n')
 
         # Get rectangles for each line
@@ -49,7 +52,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-03-27_highlighted.pdf", mode='wb') as f:
+    with open("2024-03-28_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -66,7 +69,7 @@ def loadsenateregexes():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    pdfDoc = fitz.open("2024-03-27.pdf")  # open a document
+    pdfDoc = fitz.open("2024-03-28.pdf")  # open a document
 
     # Save the generated PDF to memory buffer
     output_buffer = BytesIO()
@@ -77,7 +80,7 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, text from transcriptlines where date='2024-03-27'")
+    transcriptlines = sql1.select_all("select id, text from transcriptlines where date='2024-03-28'")
 
     transcriptlinecount = 0
     matchlinecount = 0
@@ -93,6 +96,10 @@ if __name__ == '__main__':
             # print(senateregex)
             # if senateregex == "^The Senate will come to order\.$":
             #     i = 10
+
+            if "Response of" in transcriptline['text']:
+                if "Response of" in senateregex:
+                    i = 10
 
             if re.match(senateregex, transcriptline['text']):
 
