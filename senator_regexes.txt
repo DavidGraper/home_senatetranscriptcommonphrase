@@ -1,0 +1,2 @@
+^Thank you, Senator {0}\.$
+^Senator {0} on the resolution\.$

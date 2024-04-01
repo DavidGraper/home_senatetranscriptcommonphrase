@@ -17,6 +17,7 @@
 ^(Madam|Mr\.) President, to explain my vote\.$
 ^(So the|The) Senate will stand at ease\.$
 ^(The Secretary will ring the bell\.\s+)?The Secretary will read\.$
+^(Yes, )?I will( yield)?\.$
 ^Absolutely, (Madam|Mr\.) President\.$
 ^Absolutely.$
 ^All in favor (of (?:accepting|adopting)*\s*the ((?i)resolution(?: Calendar)*|report of the Rules Committee|message of necessity|Committee on Rules report)( please)?)?\s*signify by saying aye.$
@@ -27,13 +28,16 @@
 ^And through you, (Madam|Mr.) President, if the sponsor would continue to yield.$
 ^Announce the result(s)?( when tabulated)?\.( The bill is passed\.)?$
 ^Applause\.$
-^Ayes(,)?( \d\d)\.$
+^Are there any other Senators wishing to be heard\?$
+^Ayes(,)?( \d{1,2})\.$
 ^By all means\.$
 ^Call the roll( on reconsideration| on the resolution|, please)?\.( Announce the results\.)?$
+^Call the roll\.$
 ^Certainly(, Mr. President|, Madam President)?\.$
 ^Cheers; applause\.$
 ^Communications and reports from state officers\.$
 ^Does the (Senator|sponsor)( continue to)? yield\?( The sponsor yields)?$
+^Does the sponsor yield.$
 ^Excuse me(\.|\?)$
 ^Explanation(, Mr\. President|, please)?\.$
 ^Extended standing ovation\.$
@@ -44,6 +48,8 @@
 ^I do(, Mr. President)?\.$
 ^I move (to|we) accept the (report of the Rules Committee|message).$
 ^I now move to reconsider the vote by which (the|this) bill was passed\.$
+^I vote (aye|nay)(, Madam President|, Mr\. President)?\.$
+^I vote no\.$
 ^I will(, Madam President|, Mr\. President)?\.$
 ^I'm sorry(\.|\?)$
 ^I( now)? offer the following amendments\.$
@@ -52,7 +58,7 @@
 ^In Senate, (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), (January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, (19|20)\d{2}, the Senate met pursuant to adjournment.$
 ^In the absence of clergy, (let us|may we)( please)? bow our heads in a moment of (silent|silence)( reflection or prayer|, please| please)?\.$
 ^Is there a message( of necessity)? at the desk\?$
-^Is there any (further business|housekeeping) at the desk\?$
+^Is there any (further business|housekeeping) at the desk(\.|\?)$
 ^Is there any other Senator wishing to speak on the (bill|nomination)\?$
 ^It is so ordered\.$
 ^I’d be happy to\.$
@@ -72,6 +78,7 @@
 ^Move to accept the message of necessity\.$
 ^Move to reconsider the vote by which the bill was passed\.$
 ^Nay\.$
+^Nays(,)?( \d{1,2})\.$
 ^No response\.$
 ^No(, there is not|, there isn't, Senator| objection)?\.$
 ^O\.K\.$
@@ -114,6 +121,7 @@
 ^Senator \w+, why do you rise\?$
 ^Senator w+, an explanation has been requested\.$
 ^Slow roll call\.$
+^So I'll be voting no on this bill\.$
 ^So ordered, Senator [name]\.$
 ^So ordered\.$
 ^Standing ovation\.$
@@ -136,6 +144,7 @@
 ^The Journal of (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), (January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, (19|20)\d{2}, was read and approved\.$
 ^The Resolution Calendar is adopted\.  Senator \w+\.$
 ^The Resolution Calendar is adopted\.$
+^The Secretary called the roll\.$
 ^The Secretary will announce the results\.$
 ^The Secretary will call the roll( (on|upon) reconsideration)?\.$
 ^The Secretary will continue to read\.$
@@ -143,7 +152,7 @@
 ^The Secretary will read the non(-)?controversial calendar\.$
 ^The Secretary will read the title( of the bill)?\.$
 ^The Secretary will read\.$
-^The Secretary will ring the bell\."$
+^The Secretary will ring the bell\.$
 ^The Senate stands at ease\.$
 ^The Senate will (please )?come to order\.\s+I ask (all present|everyone)( present)? to please rise and (join with me as we )?(recite|repeat)( with me)? the Pledge of Allegiance( to our Flag)?\.$
 ^The Senate will come to order\.$
@@ -192,7 +201,8 @@
 ^We will return to motions and resolutions\.$
 ^Whereupon, the Senate reconvened at \d{1,2}:\d{2} (a|p)\.m\.$
 ^Whereupon, the Senate stood at ease at \d{1,2}:\d{2} (a|p)\.m\.$
-^Whereupon, the assemblage recited the Pledge of Allegiance to the Flag.$
+^Whereupon, the assemblage recited the Pledge of Allegiance to the Flag\.$
+^Whereupon, the assemblage respected a moment of silence\.$
 ^Will the (Senator|sponsor) (continue to )?yield( to a question| for a question)?(\?|\.)$
 ^Will the sponsor yield\?\s+The sponsor yields\.$
 ^Without objection, so ordered\.(\s+Announce the results\.)?$
@@ -207,3 +217,12 @@
 ^Yes, sponsor yields\.$
 ^You may proceed( on the bill| on the bill, Senator)?(, Senator( \w+)?)?\.$
 ^You're welcome\.$
+^Thank you for coming to our chambers today\.$
+^We're honored by your presence\.$
+^To our guest[,]? [I|we] welcome you on behalf of the Senate\.$
+^Applause from galleries\.$
+^Thank you to the sponsor and everyone supporting this resolution\.$
+^To our honored guests[,]? [I|we] welcome you on behalf of the Senate\.$
+^We extend to you the privileges and (the )courtesies of this house\.$
+^Sustained standing ovation\.$
+^The resolution was adopted on (January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}(st|nd|rd|th)\.$
