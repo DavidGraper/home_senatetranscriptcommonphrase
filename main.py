@@ -5,7 +5,6 @@ from io import BytesIO
 
 
 def highlight_pdffile(pdffilelines):
-
     for info in pdffilelines:
         page2update = int(info["pdfpage"])
         line2update = int(info["pdfline"]) - 1
@@ -37,7 +36,6 @@ def highlight_pdffile(pdffilelines):
         except:
             print("Fail on page.search_for '{0}'".format(text2update))
 
-
         # highlight = page.add_squiggly_annot(the_rect)
         highlight = page.add_highlight_annot(the_rect)
 
@@ -57,14 +55,44 @@ def highlight_pdffile(pdffilelines):
 
 
 def loadsenateregexes():
-
     lines = []
     with open('senate_regexes.txt') as file:
-            for line in file:
-                line = line.strip()
-                lines.append(line)
+        for line in file:
+            line = line.strip()
+            lines.append(line)
 
     return lines
+
+
+def loadsenatorregexes():
+
+    returnlines = []
+
+    filelines = []
+    with open('senator_regexes.txt') as file:
+        for fileline in file:
+            fileline = fileline.strip()
+            filelines.append(fileline)
+
+    # Go senator and create a series of regexes for that name
+    p1 = SenateSQLDB.SenateSpeakers()
+    senatornames = p1.get_speakers()
+    senatorlastnames = []
+
+    for senatorlistname in senatornames:
+
+        # Remove "SENATOR " from string
+        senatornametext = senatorlistname['speakername'].replace("SENATOR ", "").lower().title()
+        senatorlastnames.append(senatornametext)
+
+    for fileline in filelines:
+        for senatorlastname in senatorlastnames:
+            returnlines.append(fileline.format(senatorlastname))
+
+    return returnlines
+
+
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -76,6 +104,11 @@ if __name__ == '__main__':
 
     # Get list of senate common phrase regexes
     senateregexes = loadsenateregexes()
+
+    # Expand list with common phrases that feature Senator names
+    senatorregexes = loadsenatorregexes()
+    for senatorregex in senatorregexes:
+        senateregexes.append(senatorregex)
 
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()

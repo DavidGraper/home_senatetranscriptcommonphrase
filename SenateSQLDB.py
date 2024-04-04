@@ -39,7 +39,6 @@ class SenateTranscriptRawText(SqlBase):
         return self.execute(query)
 
 
-
 class SenateTranscriptPDFLines(SqlBase):
     def __init__(self):
         SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
@@ -47,4 +46,13 @@ class SenateTranscriptPDFLines(SqlBase):
     def get_pdflines(self, transcriptlineid):
         query = "SELECT pdfpage, pdfline, pdftext FROM transcriptlinepdfbreaks WHERE transcriptlineid={0}".format(transcriptlineid)
         return self.select_all(query)
+
+
+class SenateSpeakers(SqlBase):
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def get_speakers(self):
+        query = "SELECT * from code_speakernames where active=1 and speakername like 'SENATOR%%'"
+        return self.select_all(query, [])
 

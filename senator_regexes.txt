@@ -1,14 +1,14 @@
-^Thank you, Senator {0}\.$
 ^Senator {0} on the resolution\.$
+^Senator {0} to be recorded in the (negative|affirmative)\.\s+Announce the results\.$
+^Senator {0} to explain (his|her|their) vote\.$
+^Senator {0} to explain (his|her|their) vote\.$
+^Senator {0}, (do you( continue to)? yield)\?$
+^Senator {0}, (will|do) you (continue to )?yield\?$
+^Senator {0}, an explanation has been requested\.$
+^Senator {0}, on the bill\.$
+^Senator {0}, that completes the reading of the noncontroversial supplemental calendar\.$
+^Senator {0}, to explain (his|her|their) vote\.$
+^Senator {0}, why do you rise\?$
 ^Senator {0}\.$
-^Senator [name] to explain (his|her|their) vote\.$
-^Senator \w+ to be recorded in the (negative|affirmative)\.\s+Announce the results\.$
-^Senator \w+ to explain (his|her|their) vote\.$
-^Senator \w+$
-^Senator \w+, (do you( continue to)? yield)\?$
-^Senator \w+, (will|do) you (continue to )?yield\?$
-^Senator \w+, on the bill\.$
-^Senator \w+, to explain (his|her|their) vote\.$
-^Senator \w+, why do you rise\?$
-^Senator \w+, an explanation has been requested\.$
-^Senator \w+, that completes the reading of the noncontroversial supplemental calendar\.$
+^Senator {0}\.$
+^Thank you, Senator {0}\.$

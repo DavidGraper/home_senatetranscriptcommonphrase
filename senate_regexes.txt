@@ -108,7 +108,7 @@
 ^Reports of standing committees\. The Secretary will read\.$
 ^Reports of standing committees\.$
 ^Request a show of hands\.$
-^Response of "?(Aye|Nay)\.?"?\.?$
+^Response of "(Aye|Nay)\.?"\.?$
 ^Response.*$
 ^Results\.$
 ^Right\.$
