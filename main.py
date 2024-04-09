@@ -3,6 +3,32 @@ import SenateSQLDB
 import fitz
 from io import BytesIO
 
+from spellchecker import SpellChecker
+
+spell = SpellChecker()
+spell.word_frequency.load_text_file('./legalwords.txt')
+
+def IsWordCorrectlySpelled(word2check):
+
+    # If it's a time, it's considered spelled correctly
+    if re.match("[p|a]\.m\.,?", word2check):
+        return True
+
+    # If it's an ordinal, it's considered spelled correctly
+    if re.match("\d{1,5}[st|nd|rd|th],?", word2check):
+        return True
+
+    # If it's a number, it's considered spelled correctly
+    if re.match("\d", word2check):
+        word2check = re.sub(r'[^\w\d]', '', word2check)
+        if word2check.isnumeric():
+            return True
+
+    word2check = re.sub(r'[^\w\'\-]', '', word2check)
+
+
+    return spell[word2check]
+
 
 def highlight_pdffile(pdffilelines):
     for info in pdffilelines:
@@ -50,7 +76,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-03-28_highlighted.pdf", mode='wb') as f:
+    with open("2024-04-04_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -97,7 +123,7 @@ def loadsenatorregexes():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    pdfDoc = fitz.open("2024-03-28.pdf")  # open a document
+    pdfDoc = fitz.open("2024-04-04.pdf")  # open a document
 
     # Save the generated PDF to memory buffer
     output_buffer = BytesIO()
@@ -113,44 +139,67 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, text from transcriptlines where date='2024-03-28'")
+    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-04'")
 
     transcriptlinecount = 0
     matchlinecount = 0
 
     pdflinestohighlight = []
 
+    # for transcriptline in transcriptlines:
+    #     # print(transcriptline)
+    #     transcriptlinecount += 1
+    #
+    #     for senateregex in senateregexes:
+    #
+    #         # print(senateregex)
+    #         # if senateregex == "^The Senate will come to order\.$":
+    #         #     i = 10
+    #
+    #         if "Response of" in transcriptline['text']:
+    #             if "Response of" in senateregex:
+    #                 i = 10
+    #
+    #         if re.match(senateregex, transcriptline['text']):
+    #
+    #             # Set up highlighting info
+    #             # [pdfpage, pdfline, pdftext]
+    #             #
+    #             #
+    #             pdfresults = pdf1.get_pdflines(transcriptline["id"])
+    #
+    #             for pdfresult in pdfresults:
+    #                 pdflinestohighlight.append(pdfresult)
+    #
+    #             print("Match: {0} : {1}".format(transcriptline, senateregex))
+    #             print("")
+    #             matchlinecount += 1
+    #             break
+
+    # highlight_pdffile(pdflinestohighlight)
+
+    # Spellchecking
     for transcriptline in transcriptlines:
-        # print(transcriptline)
-        transcriptlinecount += 1
+        linewords = transcriptline['text'].split()
 
-        for senateregex in senateregexes:
+        # Clean up all line words
+        for i in range(len(linewords)):
+            if "." in linewords[i]:
+                linewords[i] = linewords[i].replace(".", "")
+            if "," in linewords[i]:
+                linewords[i] = linewords[i].replace(",", "")
+            if ":" in linewords[i]:
+                linewords[i] = linewords[i].replace(":", "")
 
-            # print(senateregex)
-            # if senateregex == "^The Senate will come to order\.$":
-            #     i = 10
+        to_be_removed = {"-", "--"}
+        linewords = [item for item in linewords if item not in to_be_removed]
 
-            if "Response of" in transcriptline['text']:
-                if "Response of" in senateregex:
-                    i = 10
+        for lineword in linewords:
+            if not IsWordCorrectlySpelled(lineword):
+                print("Misspelled word : {0}, page {1} line {2}".format(lineword,
+                      str(transcriptline['page']),
+                      str(transcriptline['line'])))
 
-            if re.match(senateregex, transcriptline['text']):
-
-                # Set up highlighting info
-                # [pdfpage, pdfline, pdftext]
-                #
-                #
-                pdfresults = pdf1.get_pdflines(transcriptline["id"])
-
-                for pdfresult in pdfresults:
-                    pdflinestohighlight.append(pdfresult)
-
-                print("Match: {0} : {1}".format(transcriptline, senateregex))
-                print("")
-                matchlinecount += 1
-                break
-
-    highlight_pdffile(pdflinestohighlight)
 
     print("Total lines: {0}".format(str(transcriptlinecount)))
     print("Matching lines: {0}".format(str(matchlinecount)))

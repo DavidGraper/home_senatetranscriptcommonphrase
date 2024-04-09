@@ -11,4 +11,7 @@
 ^Senator {0}, why do you rise\?$
 ^Senator {0}\.$
 ^Senator {0}\.$
+^I waive the reading of that amendment and ask that you recognize Senator {0}\.$
 ^Thank you, Senator {0}\.$
+^Accordingly, (Mr\.|Madam) President, I appeal the ruling of the chair and ask that you recognize Senator {0} to be heard on that appeal\.$
+^The appeal has been made and recognized, and Senator {0} may be heard\.$

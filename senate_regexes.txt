@@ -1,4 +1,5 @@
 ^(And that, )?(Madam |Mr\. ) President, if you could please afford them all privileges and courtesies of this house.$
+^(Madam |Mr\. )President, I believe there's an amendment at the desk\.$
 ^(Madam|Mr\.) President(, |--)I( now)? move to (accept|override) the (report of the Rules Committee|Governor's line-item veto)\.$
 ^(Madam|Mr\.) President(, |--)I( now)? move to (accept|override|reconsider) the vote by which (the|this) bill was passed\.$
 ^(Madam|Mr\.) President(, |--)I( now)? offer( up)? the following amendments\.$
@@ -15,17 +16,21 @@
 ^(Madam|Mr\.) President, there will be an immediate meeting of the Rules Committee in the Majority Conference Room\.$
 ^(Madam|Mr\.) President, through you, if the sponsor would continue to yield\.$
 ^(Madam|Mr\.) President, to explain my vote\.$
+^(Mr\. | Madam )President, is there a message of necessity and appropriation at the desk\?$
+^(Mr\. | Madam)President, if the Senator will continue to yield\.$
 ^(Mr\. |Madam )President, at the request of the sponsors, the resolutions we took up today will be open for cosponsorship\.$
 ^(Mr\. |Madam )President, there's a report of the Finance Committee at the desk\.$
 ^(So the|The) Senate will stand at ease\.$
 ^(The Secretary will ring the bell\.\s+)?The Secretary will read\.$
 ^(Yes, )?I will( yield)?\.$
+^A show of hands has been requested and so ordered\.$
 ^Absolutely, (Madam|Mr\.) President\.$
 ^Absolutely.$
 ^All in favor (of (?:accepting|adopting)*\s*the ((?i)resolution(?: Calendar)*|report of the Rules Committee|message of necessity|Committee on Rules report)( please)?)?\s*signify by saying aye.$
 ^All right.$
 ^All those in favor of accepting the (message of necessity|report of the Rules Committee) signify by saying aye.$
 ^All those in favor of accepting the message of necessity please signify by saying aye\.$
+^All those in favor of accepting the message please signify by saying aye\.$
 ^Amendments received.$
 ^And through you, (Madam|Mr.) President, if the sponsor would continue to yield.$
 ^Announce the result(s)?( when tabulated)?\.( The bill is passed\.)?$
@@ -53,6 +58,7 @@
 ^I now move to reconsider the vote by which (the|this) bill was passed\.$
 ^I vote (aye|nay)(, Madam President|, Mr\. President)?\.$
 ^I vote no\.$
+^I want to remind the house that the vote is on the procedures of the house and the ruling of the chair\.$
 ^I will(, Madam President|, Mr\. President)?\.$
 ^I'm sorry(\.|\?)$
 ^I( now)? offer the following amendments\.$
@@ -95,6 +101,8 @@
 ^Party vote in the (affirmative|negative)\.$
 ^Please rise and be recognized\.$
 ^Please take that up at this time\.$
+^Please take up the (reading of the )?calendar\.$
+^Please take up the reading of the supplemental calendar\.$
 ^Point of order\.$
 ^Present\.$
 ^Presentation of petitions\.$
@@ -114,8 +122,11 @@
 ^Right\.$
 ^Secretary will (call|read)( the )?(roll on reconsideration|controversial calendar|last section|non-controversial calendar|title)?\.$
 ^Section [0-9]{1,2}\. +This act shall take effect (immediately|on the [0-9]{1,3}th day|on the (first|1st) (day )?of (January|February|March|April|May|June|July|August|September|October|November|December))( after it shall have become a law)?\.$
+^Seeing and hearing none, debate is closed\.$
 ^Senate will come to order\. The Secretary will begin by reading the Journal\.$
+^Should you choose not to be a cosponsor (of|on) the resolution, please notify the desk\.$
 ^Should you choose not to be a cosponsor( on the resolutions)?, please notify the desk\.$
+^Show of hands\.$
 ^Slow roll call\.$
 ^So I'll be voting no on this bill\.$
 ^So ordered, Senator [name]\.$
@@ -169,6 +180,7 @@
 ^The bill is restored to its place on the Third Reading Calendar\.$
 ^The bill passes\.$
 ^The bill will be laid aside for the day\.$
+^The message is accepted and the bill is before the house\.$
 ^The message is accepted, and the bill is before the house\.$
 ^The message is accepted\.\s+(The bill is before the house\.\s+)?Read the last section\.$
 ^The motion to override the Governor's (line-item )?veto(es)? is carried\.$
@@ -177,21 +189,25 @@
 ^The question is on the resolution\.\s+All (those\s+)?in favor signify by saying aye\.$
 ^The reading of the Journal\.(\s+The Secretary will read\.)?$
 ^The resolution is adopted\.(\s+Senator \w+\.)?$
-^The resolution is open for cosponsorship\.\s+Should you choose not to be a cosponsor of the resolution, please notify the desk\.\s+Senator Gianaris\.$
+^The resolution is open for cosponsorship\.$
 ^The resolution was adopted on (January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}(st|nd|rd|th)\.$
 ^The resolutions are open for cosponsorship\.$
+^The ruling of the chair stands, and the bill-in-chief is before the house\.$
 ^The sponsor (continues to )?yield(s)?\.$
 ^The substitution is (so )?ordered\.(\s+The Secretary will read( the title)?\.)?$
 ^There is a home(\s|-)rule message (present )?at the desk\.\s+(Read the last section\.|(The )?Secretary will read the last section)?$
 ^There is a local fiscal impact note at the desk\.\s+Read the last section\.$
 ^There is a message (of necessity )?at the desk\.$
+^There is a message of necessity and appropriation at the desk\.$
 ^There is a report of the Rules Committee at the desk\.\s+The Secretary will read\.$
 ^There is no further business (before|at) the desk\.$
 ^There is( none)?\.$
 ^There will be an immediate meeting of the Rules Committee in.*\.$
 ^There's a home(-| )rule message at the desk\.\s(Secretary will read|Read) the last section\.$
 ^This act shall take effect immediately\.$
+^Those in favor of overruling the chair, signify by saying aye\.$
 ^Those opposed, nay\.$
+^Those resolutions are open for cosponsorship\.$
 ^Through you, (Madam|Mr\.) President(, on the bill|, yes)?\.$
 ^Through you, (Madam|Mr\.) President, (will|if|would) the sponsor (will |would )?continue to yield(\.|\?)$
 ^Through you, (Madam|Mr\.) President, if the Senator will continue to yield\.$
@@ -200,6 +216,7 @@
 ^To our guests, we welcome you on behalf of the Senate\.$
 ^To our honored guests[,]? [I|we] welcome you on behalf of the Senate\.$
 ^Upon review of the amendment, in accordance with Rule 6, Section 4B, I rule it nongermane and out of order at this time\.$
+^Upon review of this amendment, in accordance with Rule 6, Section 4B, I rule it nongermane and out of order at this time\.$
 ^We extend to you the privileges and (the )courtesies of this house\.$
 ^We extend to you the privileges and courtesies of (this|the) house\.$
 ^We will return to motions and resolutions\.$
@@ -222,13 +239,3 @@
 ^Yes, sponsor yields\.$
 ^You may proceed( on the bill| on the bill, Senator)?(, Senator( \w+)?)?\.$
 ^You're welcome\.$
-^(Madam |Mr\. )President, I believe there's an amendment at the desk\.$
-^Upon review of this amendment, in accordance with Rule 6, Section 4B, I rule it nongermane and out of order at this time\.$
-^Those resolutions are open for cosponsorship\.$
-^Please take up the reading of the supplemental calendar\.$
-^(Mr\. | Madam )President, is there a message of necessity and appropriation at the desk\?$
-^There is a message of necessity and appropriation at the desk\.$
-^All those in favor of accepting the message please signify by saying aye\.$
-^The message is accepted and the bill is before the house\.$
-^(Mr\. | Madam)President, if the Senator will continue to yield\.$
-^Seeing and hearing none, debate is closed\.$
