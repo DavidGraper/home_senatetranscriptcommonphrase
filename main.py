@@ -8,7 +8,27 @@ from spellchecker import SpellChecker
 spell = SpellChecker()
 spell.word_frequency.load_text_file('./legalwords.txt')
 
+hyphenatedwords = []
+
+def loadhyphenatedwords():
+    with open("./hyphenated_words.txt") as f:
+        for line in f:
+            line = line.strip()
+            if len(line) ==0:
+                continue
+            else:
+                hyphenatedwords.append(line)
+
+
 def IsWordCorrectlySpelled(word2check):
+
+    # Check against list of legal hyphenated words
+    if word2check in hyphenatedwords:
+        return True
+
+    # If it's a hyphenated word, check in list of legit hyphenated words
+    if word2check in hyphenatedwords:
+        return True
 
     # If it's a time, it's considered spelled correctly
     if re.match("[p|a]\.m\.,?", word2check):
@@ -76,7 +96,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-04-04_highlighted.pdf", mode='wb') as f:
+    with open("2024-04-15_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -123,7 +143,7 @@ def loadsenatorregexes():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    pdfDoc = fitz.open("2024-04-04.pdf")  # open a document
+    pdfDoc = fitz.open("2024-04-15.pdf")  # open a document
 
     # Save the generated PDF to memory buffer
     output_buffer = BytesIO()
@@ -139,46 +159,49 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-04'")
+    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-15'")
 
     transcriptlinecount = 0
     matchlinecount = 0
 
     pdflinestohighlight = []
 
-    # for transcriptline in transcriptlines:
-    #     # print(transcriptline)
-    #     transcriptlinecount += 1
-    #
-    #     for senateregex in senateregexes:
-    #
-    #         # print(senateregex)
-    #         # if senateregex == "^The Senate will come to order\.$":
-    #         #     i = 10
-    #
-    #         if "Response of" in transcriptline['text']:
-    #             if "Response of" in senateregex:
-    #                 i = 10
-    #
-    #         if re.match(senateregex, transcriptline['text']):
-    #
-    #             # Set up highlighting info
-    #             # [pdfpage, pdfline, pdftext]
-    #             #
-    #             #
-    #             pdfresults = pdf1.get_pdflines(transcriptline["id"])
-    #
-    #             for pdfresult in pdfresults:
-    #                 pdflinestohighlight.append(pdfresult)
-    #
-    #             print("Match: {0} : {1}".format(transcriptline, senateregex))
-    #             print("")
-    #             matchlinecount += 1
-    #             break
+    for transcriptline in transcriptlines:
+        # print(transcriptline)
+        transcriptlinecount += 1
 
-    # highlight_pdffile(pdflinestohighlight)
+        for senateregex in senateregexes:
+
+            # print(senateregex)
+            # if senateregex == "^The Senate will come to order\.$":
+            #     i = 10
+
+            if "Response of" in transcriptline['text']:
+                if "Response of" in senateregex:
+                    i = 10
+
+            if re.match(senateregex, transcriptline['text']):
+
+                # Set up highlighting info
+                # [pdfpage, pdfline, pdftext]
+                #
+                #
+                pdfresults = pdf1.get_pdflines(transcriptline["id"])
+
+                for pdfresult in pdfresults:
+                    pdflinestohighlight.append(pdfresult)
+
+                print("Match: {0} : {1}".format(transcriptline, senateregex))
+                print("")
+                matchlinecount += 1
+                break
+
+    highlight_pdffile(pdflinestohighlight)
 
     # Spellchecking
+
+    loadhyphenatedwords()
+
     for transcriptline in transcriptlines:
         linewords = transcriptline['text'].split()
 
@@ -195,8 +218,9 @@ if __name__ == '__main__':
         linewords = [item for item in linewords if item not in to_be_removed]
 
         for lineword in linewords:
+
             if not IsWordCorrectlySpelled(lineword):
-                print("Misspelled word : {0}, page {1} line {2}".format(lineword,
+                print("Misspelled word : {0} page {1} line {2}".format(lineword,
                       str(transcriptline['page']),
                       str(transcriptline['line'])))
 
