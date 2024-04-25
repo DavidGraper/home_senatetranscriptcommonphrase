@@ -56,3 +56,11 @@ class SenateSpeakers(SqlBase):
         query = "SELECT * from code_speakernames where active=1 and speakername like 'SENATOR%%'"
         return self.select_all(query, [])
 
+
+class SenateWords(SqlBase):
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def get_words(self):
+        query = "SELECT * from temp_uniquecorpuswords"
+        return self.select_all(query, [])

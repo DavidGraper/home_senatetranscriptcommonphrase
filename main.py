@@ -2,11 +2,13 @@ import re
 import SenateSQLDB
 import fitz
 from io import BytesIO
+import sys
+import os
 
 from spellchecker import SpellChecker
 
 spell = SpellChecker()
-spell.word_frequency.load_text_file('./legalwords.txt')
+spell.word_frequency.load_text_file('./words_yes_ispell_no_pyspell.txt')
 
 hyphenatedwords = []
 
@@ -26,9 +28,9 @@ def IsWordCorrectlySpelled(word2check):
     if word2check in hyphenatedwords:
         return True
 
-    # If it's a hyphenated word, check in list of legit hyphenated words
-    if word2check in hyphenatedwords:
-        return True
+    # # If it's a hyphenated word, check in list of legit hyphenated words
+    # if word2check in hyphenatedwords:
+    #     return True
 
     # If it's a time, it's considered spelled correctly
     if re.match("[p|a]\.m\.,?", word2check):
@@ -96,7 +98,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-04-15_highlighted.pdf", mode='wb') as f:
+    with open("2024-04-17_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -108,6 +110,20 @@ def loadsenateregexes():
             lines.append(line)
 
     return lines
+
+def senatewordsnotinspellchecker():
+    p1 = SenateSQLDB.SenateWords()
+
+    f = open("words_not_in_pyspell.txt", "w")
+
+    uniquewords = p1.get_words()
+
+    for word in uniquewords:
+        if not IsWordCorrectlySpelled(word['token']):
+            f.write("{0}\n".format(word['token']))
+
+    f.close()
+
 
 
 def loadsenatorregexes():
@@ -138,12 +154,23 @@ def loadsenatorregexes():
     return returnlines
 
 
+filename2process = ""
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    pdfDoc = fitz.open("2024-04-15.pdf")  # open a document
+    # senatewordsnotinspellchecker()
+    # exit()
+
+    filename2process = "2024-04-17.pdf"
+    # filename2process = sys.argv[1]
+
+    # if os.path.isfile(filename2process):
+    #     print("Cannot find filename '{0}".format(filename2process))
+    #     exit()
+
+    pdfDoc = fitz.open(filename2process)  # open a document
 
     # Save the generated PDF to memory buffer
     output_buffer = BytesIO()
@@ -159,7 +186,7 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-15'")
+    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-17'")
 
     transcriptlinecount = 0
     matchlinecount = 0
@@ -202,6 +229,8 @@ if __name__ == '__main__':
 
     loadhyphenatedwords()
 
+    misspelledwords = []
+
     for transcriptline in transcriptlines:
         linewords = transcriptline['text'].split()
 
@@ -217,13 +246,33 @@ if __name__ == '__main__':
         to_be_removed = {"-", "--"}
         linewords = [item for item in linewords if item not in to_be_removed]
 
+
         for lineword in linewords:
 
             if not IsWordCorrectlySpelled(lineword):
                 print("Misspelled word : {0} page {1} line {2}".format(lineword,
                       str(transcriptline['page']),
                       str(transcriptline['line'])))
+                if lineword not in misspelledwords:
+                    misspelledwords.append(lineword)
 
 
     print("Total lines: {0}".format(str(transcriptlinecount)))
     print("Matching lines: {0}".format(str(matchlinecount)))
+
+    print("**")
+    misspelledwords.sort()
+
+    # Remove legitimate contractions
+    for word in misspelledwords:
+        if "'" in word:
+            wordparts = word.aplit("'")
+
+
+
+    print(misspelledwords)
+
+    f = open("misspelled_words", "w")
+
+    for word in misspelledwords:
+        f.write(word + "\n")
