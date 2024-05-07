@@ -98,7 +98,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-04-17_highlighted.pdf", mode='wb') as f:
+    with open("2024-04-19_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -157,13 +157,37 @@ def loadsenatorregexes():
 filename2process = ""
 
 
+def isContractionLegitimate(spelledword, contractions):
+
+    wordparts = spelledword.split("'")
+
+    # print(wordparts)
+    word = wordparts[0]
+    contraction = wordparts[1]
+
+    returnval = False
+
+    if contraction in contractions:
+        if IsWordCorrectlySpelled(word) or \
+                word in counties or \
+                word in cities or \
+                word in firstnames or \
+                word in lastnames or \
+                word in senatornames or \
+                word in months or \
+                word in days:
+            returnval = True
+
+    return returnval
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
     # senatewordsnotinspellchecker()
     # exit()
 
-    filename2process = "2024-04-17.pdf"
+    filename2process = "2024-04-19.pdf"
     # filename2process = sys.argv[1]
 
     # if os.path.isfile(filename2process):
@@ -186,7 +210,7 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-17'")
+    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-19'")
 
     transcriptlinecount = 0
     matchlinecount = 0
@@ -227,7 +251,7 @@ if __name__ == '__main__':
 
     # Spellchecking
 
-    loadhyphenatedwords()
+    # loadhyphenatedwords()
 
     misspelledwords = []
 
@@ -250,24 +274,124 @@ if __name__ == '__main__':
         for lineword in linewords:
 
             if not IsWordCorrectlySpelled(lineword):
-                print("Misspelled word : {0} page {1} line {2}".format(lineword,
-                      str(transcriptline['page']),
-                      str(transcriptline['line'])))
+                # print("Misspelled word : {0} page {1} line {2}".format(lineword,
+                #       str(transcriptline['page']),
+                #       str(transcriptline['line'])))
                 if lineword not in misspelledwords:
                     misspelledwords.append(lineword)
 
+    #
+    #     Remove proper names
 
-    print("Total lines: {0}".format(str(transcriptlinecount)))
-    print("Matching lines: {0}".format(str(matchlinecount)))
+    with open("senatornames.txt") as f2:
+        senatornames = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in senatornames]
+
+    with open("romannumerals.txt") as f2:
+        romannumerals = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in romannumerals]
+
+    with open("nyscounties.txt") as f2:
+        counties = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in counties]
+
+    with open("nyscities.txt") as f2:
+        cities = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in cities]
+
+    with open("daysoftheweek.txt") as f2:
+        days = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in days]
+
+    with open("monthsoftheyear.txt") as f2:
+        months = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in months]
+
+    with open("names.txt") as f2:
+        firstnames = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in firstnames]
+
+    with open("lastnames.txt") as f2:
+        lastnames = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in lastnames]
+
+    with open("acronyms.txt") as f2:
+        acronyms = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in acronyms]
+
+    with open("nationalities.txt") as f2:
+        nationalities = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in nationalities]
+
+    with open("worldcities.txt") as f2:
+        worldcities = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in worldcities]
+
+    with open("hyphenated_words.txt") as f2:
+        hyphenatedwords = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in hyphenatedwords]
+
+    with open("famouspeople.txt") as f2:
+        famouspeople = f2.read().splitlines()
+
+    misspelledwords = [item for item in misspelledwords if item not in famouspeople]
+
+    with open("contractions.txt") as f2:
+        contractions = f2.read().splitlines()
+
+
+    #
+    #
+    #             senator
+    #             for word in misspelledwords:
+    #                 f.write(word + "\n")
+    #
+    #
+    #
+    # print("Total lines: {0}".format(str(transcriptlinecount)))
+    # print("Matching lines: {0}".format(str(matchlinecount)))
 
     print("**")
     misspelledwords.sort()
 
-    # Remove legitimate contractions
-    for word in misspelledwords:
-        if "'" in word:
-            wordparts = word.aplit("'")
+    # # Remove legitimate contractions <= TODO fix with list comprehension!
+    # for spelledword in misspelledwords:
+    #     if "'" in spelledword:
+    #         isContractionLegitimate()
 
+    # Remove legitimate contractions
+    legitimatecontractions = [word for word in misspelledwords if "'" in word and isContractionLegitimate(word, contractions)]
+    misspelledwords = [word for word in misspelledwords if word not in legitimatecontractions]
+
+    # Remove currency
+    misspelledwords = [word for word in misspelledwords if not re.match("^\$\d+", word)]
+
+    # Remove Senate bills
+    misspelledwords = [word for word in misspelledwords if not re.match("^S\d+", word)]
+
+
+    #
+    # for spelledword in misspelledwords:
+    #     if re.match("^\$\d+", spelledword):
+    #         misspelledwords.remove(spelledword)
+
+
+    # # Remove Senate bills
+    # for spelledword in misspelledwords:
+    #     if re.match("^S\d+", spelledword):
+    #         misspelledwords.remove(spelledword)
 
 
     print(misspelledwords)

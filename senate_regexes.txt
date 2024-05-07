@@ -1,4 +1,5 @@
 ^(And that, )?(Madam |Mr\. ) President, if you could please afford them all privileges and courtesies of this house.$
+^(Madam President|Mr\. President), we've agreed to restore this bill to the noncontroversial calendar\.$
 ^(Madam |Mr\. )President, I believe there's an amendment at the desk\.$
 ^(Madam|Mr\.) President(, |--)I( now)? move to (accept|override) the (report of the Rules Committee|Governor's line-item veto)\.$
 ^(Madam|Mr\.) President(, |--)I( now)? move to (accept|override|reconsider) the vote by which (the|this) bill was passed\.$
@@ -10,6 +11,7 @@
 ^(Madam|Mr\.) President, are there any substitutions at the desk\?$
 ^(Madam|Mr\.) President, can we take up the supplemental calendar, please\.$
 ^(Madam|Mr\.) President, if (through you )?the (Senator|sponsor) would continue to yield\.$
+^(Madam|Mr\.) President, if the (sponsor|Senator) (would |will )continue to yield(\.|\?)$
 ^(Madam|Mr\.) President, if we could go to the noncontroversial reading of the calendar\.$
 ^(Madam|Mr\.) President, is there( a | any )(message of necessity|further business|housekeeping) at the desk\?$
 ^(Madam|Mr\.) President, on the bill\.$
@@ -45,7 +47,7 @@
 ^Cheers; applause\.$
 ^Communications and reports from state officers\.$
 ^Does the (Senator|sponsor)( continue to)? yield\?( The sponsor yields)?$
-^Does the sponsor yield.$
+^Does the (sponsor|Senator) yield.$
 ^Excuse me(\.|\?)$
 ^Explanation(, Mr\. President|, please)?\.$
 ^Extended standing ovation\.$
@@ -180,8 +182,10 @@
 ^The bill is restored to its place on the Third Reading Calendar\.$
 ^The bill passes\.$
 ^The bill will be laid aside for the day\.$
+^The bill will be restored to the noncontroversial calendar\.$
 ^The message is accepted and the bill is before the house\.$
 ^The message is accepted, and the bill is before the house\.$
+^The message is accepted\.$
 ^The message is accepted\.\s+(The bill is before the house\.\s+)?Read the last section\.$
 ^The motion to override the Governor's (line-item )?veto(es)? is carried\.$
 ^The nominee is hereby confirmed\.\s+The Secretary will read\.$
@@ -209,7 +213,8 @@
 ^Those opposed, nay\.$
 ^Those resolutions are open for cosponsorship\.$
 ^Through you, (Madam|Mr\.) President(, on the bill|, yes)?\.$
-^Through you, (Madam|Mr\.) President, (will|if|would) the sponsor (will |would )?continue to yield(\.|\?)$
+^Through you, (Madam|Mr\.) President(,) will the sponsor yield\?$
+^Through you, (Madam|Mr\.) President, (will|if|would) the sponsor (will |would )?(still )?continue to yield(\.|\?)$
 ^Through you, (Madam|Mr\.) President, if the Senator will continue to yield\.$
 ^To explain my vote(, (Madam|Mr\.) President)?\.$
 ^To our guest[,]? [I|we] welcome you on behalf of the Senate\.$
@@ -239,5 +244,3 @@
 ^Yes, sponsor yields\.$
 ^You may proceed( on the bill| on the bill, Senator)?(, Senator( \w+)?)?\.$
 ^You're welcome\.$
-^(Madam President|Mr\. President), we've agreed to restore this bill to the noncontroversial calendar\.$
-^The bill will be restored to the noncontroversial calendar\.$
