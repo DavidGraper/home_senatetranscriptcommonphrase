@@ -64,3 +64,36 @@ class SenateWords(SqlBase):
     def get_words(self):
         query = "SELECT * from temp_uniquecorpuswords"
         return self.select_all(query, [])
+
+
+class SenateRegexes(SqlBase):
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def get_regexes(self):
+        query = "SELECT regex from data_regexes_senate"
+        return self.select_all(query, [])
+
+class SenatorRegexes(SqlBase):
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def get_regexes(self):
+        query = "SELECT regex from data_regexes_senators"
+        return self.select_all(query, [])
+
+class GetSpelledWordsFromDatabase(SqlBase):
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def get_customwordsindb(self):
+        query = "select word from data_legitwords"
+        return self.select_all(query, [])
+
+class GetLegitimateContractionsFromDatabase(SqlBase):
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def get_legitcontractions(self):
+        query = "select contraction from data_legitcontractions"
+        return self.select_all(query, [])

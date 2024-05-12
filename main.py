@@ -4,6 +4,9 @@ import fitz
 from io import BytesIO
 import sys
 import os
+import commonphraseregexcheck
+import spellcheck
+
 
 from spellchecker import SpellChecker
 
@@ -184,33 +187,52 @@ def isContractionLegitimate(spelledword, contractions):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    # senatewordsnotinspellchecker()
-    # exit()
-
+    # Hack - Load single file to process
     filename2process = "2024-04-19.pdf"
-    # filename2process = sys.argv[1]
-
-    # if os.path.isfile(filename2process):
-    #     print("Cannot find filename '{0}".format(filename2process))
-    #     exit()
-
     pdfDoc = fitz.open(filename2process)  # open a document
 
-    # Save the generated PDF to memory buffer
+    # Set up a memory buffer to save the generated output PDF with highlighting
     output_buffer = BytesIO()
-
-    # Get list of senate common phrase regexes
-    senateregexes = loadsenateregexes()
-
-    # Expand list with common phrases that feature Senator names
-    senatorregexes = loadsenatorregexes()
-    for senatorregex in senatorregexes:
-        senateregexes.append(senatorregex)
 
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-19'")
+    # Hack - Load single date to process
+    filename2process = "2024-04-19.pdf"
+    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-19' limit 400")
+
+    q1 = commonphraseregexcheck.DetermineCommonPhrases()
+    commonphraselines = q1.getcommonphrasetranscriptlines(transcriptlines)
+
+    r1 = spellcheck.CheckSpelling()
+    misspelledwords = r1.getmisspelledwords(transcriptlines)
+
+    s1 = ngramlineevaluate.()
+
+    #
+    #
+    # Working here - writing the ngramlineevaluate class
+
+
+
+
+
+    print(r1.IsWordCorrectlySpelled("I'd"))
+    #
+    regexes = q1.loadsenateregexes()
+
+    # # Get list of senate common phrase regexes
+    # senateregexes = loadsenateregexes()
+    #
+    # # Expand list with common phrases that feature Senator names
+    # senatorregexes = loadsenatorregexes()
+    # for senatorregex in senatorregexes:
+    #     senateregexes.append(senatorregex)
+
+    # sql1 = SenateSQLDB.SenateTranscript()
+    # pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
+    #
+    # transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-19'")
 
     transcriptlinecount = 0
     matchlinecount = 0
