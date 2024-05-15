@@ -8,6 +8,7 @@ import commonphraseregexcheck
 import ngramlineevaluate
 import spellcheck
 
+import ProcessPDFFile
 
 from spellchecker import SpellChecker
 
@@ -57,6 +58,7 @@ def IsWordCorrectlySpelled(word2check):
 
 
 def highlight_pdffile(pdffilelines):
+
     for info in pdffilelines:
         page2update = int(info["pdfpage"])
         line2update = int(info["pdfline"]) - 1
@@ -102,7 +104,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-05-13_highlighted.pdf", mode='wb') as f:
+    with open("2024-05-14_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -189,7 +191,7 @@ def isContractionLegitimate(spelledword, contractions):
 if __name__ == '__main__':
 
     # Hack - Load single file to process
-    filename2process = "2024-05-13.pdf"
+    filename2process = "2024-05-14.pdf"
     pdfDoc = fitz.open(filename2process)  # open a document
 
     # Set up a memory buffer to save the generated output PDF with highlighting
@@ -237,8 +239,10 @@ if __name__ == '__main__':
     #
     # i = 10
     #
+    # exit()
+    #
     # # Working here - writing the ngramlineevaluate class
-
+    #
 
 
 
@@ -260,7 +264,8 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-05-13'")
+    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines "
+                                      "where date='2024-05-14'")
 
     transcriptlinecount = 0
     matchlinecount = 0
@@ -297,7 +302,8 @@ if __name__ == '__main__':
                 matchlinecount += 1
                 break
 
-    highlight_pdffile(pdflinestohighlight)
+    # highlight_pdffile(pdflinestohighlight)
+    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-14.pdf", pdflinestohighlight)
 
     # Spellchecking
 

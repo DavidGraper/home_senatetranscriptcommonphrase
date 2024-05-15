@@ -119,7 +119,7 @@ class NGramEvaluate:
         return1 = "<p>[{0}/{1}] - {2}:   ".format(page, line, speaker)
         for pword in sentencepwords:
             if k in badngrams:
-                return1 += "<b><i><u>" + pword + "</b></i></u> "
+                return1 += "<x>" + pword + "</x> "
             else:
                 return1 += pword + " "
             k += 1
