@@ -97,3 +97,13 @@ class GetLegitimateContractionsFromDatabase(SqlBase):
     def get_legitcontractions(self):
         query = "select contraction from data_legitcontractions"
         return self.select_all(query, [])
+
+class SenateTrigrams(SqlBase):
+
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def gettrigraminfo(self, gram1to3):
+        query = "select nextword, frequency from data_ngrams where token='{0}'".format(gram1to3)
+        return self.select_all(query)
+

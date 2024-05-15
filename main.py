@@ -5,6 +5,7 @@ from io import BytesIO
 import sys
 import os
 import commonphraseregexcheck
+import ngramlineevaluate
 import spellcheck
 
 
@@ -101,7 +102,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-04-19_highlighted.pdf", mode='wb') as f:
+    with open("2024-05-13_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -188,20 +189,21 @@ def isContractionLegitimate(spelledword, contractions):
 if __name__ == '__main__':
 
     # Hack - Load single file to process
-    filename2process = "2024-05-07.pdf"
+    filename2process = "2024-05-13.pdf"
     pdfDoc = fitz.open(filename2process)  # open a document
 
     # Set up a memory buffer to save the generated output PDF with highlighting
     output_buffer = BytesIO()
 
-    # # START START START
-    #
+    # # # START START START
+    # #
     # sql1 = SenateSQLDB.SenateTranscript()
     # pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
     #
     # # Hack - Load single date to process
     # filename2process = "2024-04-19.pdf"
-    # transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-04-19' limit 400")
+    # transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
+    #                                   "where date='2024-04-19' limit 500")
     #
     # q1 = commonphraseregexcheck.DetermineCommonPhrases()
     # commonphraselines = q1.getcommonphrasetranscriptlines(transcriptlines)
@@ -209,13 +211,33 @@ if __name__ == '__main__':
     # r1 = spellcheck.CheckSpelling()
     # misspelledwords = r1.getmisspelledwords(transcriptlines)
     #
-    # s1 = ngramlineevaluate.()
+    # s1 = ngramlineevaluate.NGramEvaluate()
     #
-
-
+    # templine = ""
+    # templines = []
     #
+    # for transcriptline in transcriptlines:
     #
-    # Working here - writing the ngramlineevaluate class
+    #     # Mark common phrase lines
+    #     matchpageline = {'page': transcriptline['page'], 'line': transcriptline['line']}
+    #
+    #     if matchpageline in commonphraselines:
+    #         templine = "<p>[{0}/{1}] - {2}:   ".format(transcriptline['page'],
+    #                                                          transcriptline['line'],
+    #                                                          transcriptline['speaker'])
+    #         templine += "<s>{0}</s></p>".format(transcriptline['text'])
+    #
+    #     else:
+    #         templine = s1.trigramtestsentence(transcriptline, 0)
+    #
+    #     templines.append(templine)
+    #
+    #     with open('my_file.txt', 'a') as f:
+    #         f.write(templine + '\n')
+    #
+    # i = 10
+    #
+    # # Working here - writing the ngramlineevaluate class
 
 
 
@@ -238,7 +260,7 @@ if __name__ == '__main__':
     sql1 = SenateSQLDB.SenateTranscript()
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
-    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-05-07'")
+    transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines where date='2024-05-13'")
 
     transcriptlinecount = 0
     matchlinecount = 0

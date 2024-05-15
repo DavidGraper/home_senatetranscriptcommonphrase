@@ -1,15 +1,16 @@
 import SenateSQLDB
+
 import nltk
 from nltk import ngrams
 from collections import defaultdict
 from collections import Counter
 from nltk.tokenize import WhitespaceTokenizer
 
-class NGramEvalute:
+class NGramEvaluate:
 
     def __init__(self):
 
-        sdb = SenateSQLDB.SenateData()
+        self.sdb = SenateSQLDB.SenateTrigrams()
 
     def remove_punctuation(self, input_string):
 
@@ -21,7 +22,7 @@ class NGramEvalute:
 
         return result
 
-    def breakintotrigrams(self, words):
+    def breakintotrigrams(self, words, N):
 
         # Preprocess the words (convert to lowercase, remove punctuation)
         words = [word.lower() for word in words if word.isalnum()]
@@ -35,9 +36,9 @@ class NGramEvalute:
     def trigramtestsentence(self, transline, percentcutoff):
 
         sentence = transline['text']
-        speaker = transline['speaker']
         page = transline['page']
         line = transline['line']
+        speaker = transline['speaker']
 
         returnsentence = ""
         badngrams = []
@@ -55,13 +56,22 @@ class NGramEvalute:
         sentencewords = nltk.word_tokenize(sentence)
 
         # Break the sentence into a series of ngrams
-        sentencengrams = self.breakintotrigrams(sentencewords)
+        sentencengrams = self.breakintotrigrams(sentencewords, 4)
 
         # Hack - creating 2 offset for first ngram
         ngramcounter = 2
 
+        # Hack - Remove first two ngram entries
+        sentencengrams.pop(0)
+        sentencengrams.pop(0)
+
+        # Hack - Remove the last two ngram entries
+        sentencengrams.pop()
+        sentencengrams.pop()
+
         # Hack
         badngramcount = 0
+
         #
         for sentencengram in sentencengrams:
 
@@ -70,11 +80,11 @@ class NGramEvalute:
             sentencetrigramtext = "{0} {1} {2}".format(sentencengram[0], sentencengram[1], sentencengram[2])
             sentencenextword = sentencengram[3]
 
-            # print("***")
-            # print("Seeking trigram: '{0}'".format(sentencetrigramtext))
-            # print("with nextword: '{0}'".format(sentencenextword))
+            print("***")
+            print("Seeking trigram: '{0}'".format(sentencetrigramtext))
+            print("with nextword: '{0}'".format(sentencenextword))
 
-            ngramdistribution = sdb.gettrigraminfo(sentencetrigramtext)
+            ngramdistribution = self.sdb.gettrigraminfo(sentencetrigramtext)
 
             # calculate probability of nextword given token
             totalfrequency = 0
@@ -105,6 +115,7 @@ class NGramEvalute:
 
         # Assemble formatted string
         k = 1
+        return1 = ""
         return1 = "<p>[{0}/{1}] - {2}:   ".format(page, line, speaker)
         for pword in sentencepwords:
             if k in badngrams:
@@ -115,10 +126,12 @@ class NGramEvalute:
 
         return1 += "</p>"
 
-        with open('my_file.txt', 'a') as f:
-            f.write(return1 + '\n')
+        # with open('my_file.txt', 'a') as f:
+        #     f.write(return1 + '\n')
 
         i = 10
+
+        return return1
 
         #
         # print(sentencewords)
