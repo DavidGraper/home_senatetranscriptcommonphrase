@@ -19,11 +19,13 @@ class DetermineCommonPhrases:
             print(transcriptline)
             for senateregex in self.senateregexes:
                 if re.match(senateregex, transcriptline['text']):
-                    commonphrases.append({"page": transcriptline['page'],
+                    commonphrases.append({"id": transcriptline['id'],
+                                          "page": transcriptline['page'],
                                           "line": transcriptline['line']})
             for senatorregex in self.senatorregexes:
                 if re.match(senatorregex, transcriptline['text']):
-                    commonphrases.append({"page": transcriptline['page'],
+                    commonphrases.append({"id": transcriptline['id'],
+                                          "page": transcriptline['page'],
                                           "line": transcriptline['line']})
 
         return commonphrases

@@ -17,18 +17,18 @@ spell.word_frequency.load_text_file('./words_yes_ispell_no_pyspell.txt')
 
 hyphenatedwords = []
 
+
 def loadhyphenatedwords():
     with open("./hyphenated_words.txt") as f:
         for line in f:
             line = line.strip()
-            if len(line) ==0:
+            if len(line) == 0:
                 continue
             else:
                 hyphenatedwords.append(line)
 
 
 def IsWordCorrectlySpelled(word2check):
-
     # Check against list of legal hyphenated words
     if word2check in hyphenatedwords:
         return True
@@ -53,12 +53,10 @@ def IsWordCorrectlySpelled(word2check):
 
     word2check = re.sub(r'[^\w\'\-]', '', word2check)
 
-
     return spell[word2check]
 
 
 def highlight_pdffile(pdffilelines):
-
     for info in pdffilelines:
         page2update = int(info["pdfpage"])
         line2update = int(info["pdfline"]) - 1
@@ -117,6 +115,7 @@ def loadsenateregexes():
 
     return lines
 
+
 def senatewordsnotinspellchecker():
     p1 = SenateSQLDB.SenateWords()
 
@@ -131,9 +130,7 @@ def senatewordsnotinspellchecker():
     f.close()
 
 
-
 def loadsenatorregexes():
-
     returnlines = []
 
     filelines = []
@@ -148,7 +145,6 @@ def loadsenatorregexes():
     senatorlastnames = []
 
     for senatorlistname in senatornames:
-
         # Remove "SENATOR " from string
         senatornametext = senatorlistname['speakername'].replace("SENATOR ", "").lower().title()
         senatorlastnames.append(senatornametext)
@@ -164,7 +160,6 @@ filename2process = ""
 
 
 def isContractionLegitimate(spelledword, contractions):
-
     wordparts = spelledword.split("'")
 
     # print(wordparts)
@@ -187,6 +182,47 @@ def isContractionLegitimate(spelledword, contractions):
     return returnval
 
 
+def getnewname(transcriptlinein):
+
+    # Break the full transcript line into words
+    linewords = transcriptlinein["text"].split(" ")
+
+    # Break the pdf lines into words/pages/lines
+    pdflines = pdf1.get_pdflines(transcriptlinein["id"])
+
+    # For each pdf line, break it into words and create a dict object for each
+    # word indicating the page and line that word is on
+    pdflinewordslist = []
+
+    linewordindex = 0
+    ordinal = 0
+
+    for pdfline in pdflines:
+
+        page = pdfline['pdfpage']
+        line = pdfline['pdfline']
+
+        # Split the line by words
+        pdflinewords = pdfline["pdftext"].split(" ")
+
+        # Match linewords against pdflinewords
+        for pdflineword in pdflinewords:
+
+            if pdflineword == linewords[linewordindex]:
+                pdflinewordslist.append({'pdfpage':pdfline["pdfpage"],
+                                         'pdfline':pdfline["pdfline"],
+                                         'ordinal':ordinal,
+                                         'pdfword':pdflineword})
+                linewordindex += 1
+                ordinal += 1
+
+
+    pdflineindex = 0
+
+
+    return pdflinewordslist
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
@@ -197,55 +233,92 @@ if __name__ == '__main__':
     # Set up a memory buffer to save the generated output PDF with highlighting
     output_buffer = BytesIO()
 
-    # # # START START START
-    # #
-    # sql1 = SenateSQLDB.SenateTranscript()
-    # pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
+    # # START START START
     #
-    # # Hack - Load single date to process
-    # filename2process = "2024-04-19.pdf"
-    # transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
-    #                                   "where date='2024-04-19' limit 500")
-    #
-    # q1 = commonphraseregexcheck.DetermineCommonPhrases()
-    # commonphraselines = q1.getcommonphrasetranscriptlines(transcriptlines)
-    #
-    # r1 = spellcheck.CheckSpelling()
-    # misspelledwords = r1.getmisspelledwords(transcriptlines)
-    #
-    # s1 = ngramlineevaluate.NGramEvaluate()
-    #
-    # templine = ""
-    # templines = []
-    #
-    # for transcriptline in transcriptlines:
-    #
-    #     # Mark common phrase lines
-    #     matchpageline = {'page': transcriptline['page'], 'line': transcriptline['line']}
-    #
-    #     if matchpageline in commonphraselines:
-    #         templine = "<p>[{0}/{1}] - {2}:   ".format(transcriptline['page'],
-    #                                                          transcriptline['line'],
-    #                                                          transcriptline['speaker'])
-    #         templine += "<s>{0}</s></p>".format(transcriptline['text'])
-    #
-    #     else:
-    #         templine = s1.trigramtestsentence(transcriptline, 0)
-    #
-    #     templines.append(templine)
-    #
-    #     with open('my_file.txt', 'a') as f:
-    #         f.write(templine + '\n')
-    #
-    # i = 10
-    #
-    # exit()
+    sql1 = SenateSQLDB.SenateTranscript()
+    pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
+
+    # Pull all transcriptlines for the date
+    transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
+                                      "where date='2024-05-14' limit 10")
+
+    # Scan all lines in transcript and mark any common phrases
+    q1 = commonphraseregexcheck.DetermineCommonPhrases()
+    commonphraselines = q1.getcommonphrasetranscriptlines(transcriptlines)
+
+    # Create a list of pdf lines to highlight
+    pdflinestohighlight = []
+    for commonphraseline in commonphraselines:
+        pdfresults = pdf1.get_pdflines(commonphraseline["id"])
+
+        for pdfresult in pdfresults:
+            pdflinestohighlight.append(pdfresult)
+
+    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-14.pdf", pdflinestohighlight)
+
+    # Perform ngram evaluation of transcript lines that are not common phrases
+    s1 = ngramlineevaluate.NGramEvaluate()
+
+    markeduplines = []
+
+    for transcriptline in transcriptlines:
+
+        # If the transcript line is not one of the commonphrase lines
+        transcriptline_tocheckagainstcommonphraselines = {'id': transcriptline['id'],
+                                                          'page': transcriptline['page'],
+                                                          'line': transcriptline['line']}
+
+        if transcriptline_tocheckagainstcommonphraselines not in commonphraselines:
+
+            # Create a completely pdf-indexed version of the transcriptline
+            pdfindexedtext = getnewname(transcriptline)
+
+            # Create a marked up transcriptline
+            markeduptext = s1.trigramtestsentence(transcriptline, 0)
+
+            markeduplines.append([markeduptext, pdfindexedtext])
+            # # Save any transcriptlines with markup in its text
+            # if "<x>" in markeduptext:
+            #     transcriptline['text'] = markeduptext
+            #     markeduplines.append(transcriptline)
+
+            i = 10
+
+    # Break down sentenc
+
+    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-14.pdf", markeduplines)
+
+    r1 = spellcheck.CheckSpelling()
+    misspelledwords = r1.getmisspelledwords(transcriptlines)
+
+    templine = ""
+    templines = []
+
+    for transcriptline in transcriptlines:
+
+        # Mark common phrase lines
+        matchpageline = {'page': transcriptline['page'], 'line': transcriptline['line']}
+
+        if matchpageline in commonphraselines:
+            templine = "<p>[{0}/{1}] - {2}:   ".format(transcriptline['page'],
+                                                       transcriptline['line'],
+                                                       transcriptline['speaker'])
+            templine += "<s>{0}</s></p>".format(transcriptline['text'])
+
+        else:
+            templine = s1.trigramtestsentence(transcriptline, 0)
+
+        templines.append(templine)
+
+        with open('my_file.txt', 'a') as f:
+            f.write(templine + '\n')
+
+    i = 10
+
+    exit()
     #
     # # Working here - writing the ngramlineevaluate class
     #
-
-
-
 
     # print(r1.IsWordCorrectlySpelled("I'd"))
     # #
@@ -303,7 +376,7 @@ if __name__ == '__main__':
                 break
 
     # highlight_pdffile(pdflinestohighlight)
-    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-14.pdf", pdflinestohighlight)
+    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-14.pdf", pdflinestohighlight)
 
     # Spellchecking
 
@@ -325,7 +398,6 @@ if __name__ == '__main__':
 
         to_be_removed = {"-", "--"}
         linewords = [item for item in linewords if item not in to_be_removed]
-
 
         for lineword in linewords:
 
@@ -407,7 +479,6 @@ if __name__ == '__main__':
     with open("contractions.txt") as f2:
         contractions = f2.read().splitlines()
 
-
     #
     #
     #             senator
@@ -428,7 +499,8 @@ if __name__ == '__main__':
     #         isContractionLegitimate()
 
     # Remove legitimate contractions
-    legitimatecontractions = [word for word in misspelledwords if "'" in word and isContractionLegitimate(word, contractions)]
+    legitimatecontractions = [word for word in misspelledwords if
+                              "'" in word and isContractionLegitimate(word, contractions)]
     misspelledwords = [word for word in misspelledwords if word not in legitimatecontractions]
 
     # Remove currency
@@ -437,18 +509,15 @@ if __name__ == '__main__':
     # Remove Senate bills
     misspelledwords = [word for word in misspelledwords if not re.match("^S\d+", word)]
 
-
     #
     # for spelledword in misspelledwords:
     #     if re.match("^\$\d+", spelledword):
     #         misspelledwords.remove(spelledword)
 
-
     # # Remove Senate bills
     # for spelledword in misspelledwords:
     #     if re.match("^S\d+", spelledword):
     #         misspelledwords.remove(spelledword)
-
 
     print(misspelledwords)
 
@@ -456,3 +525,4 @@ if __name__ == '__main__':
 
     for word in misspelledwords:
         f.write(word + "\n")
+

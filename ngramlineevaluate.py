@@ -5,6 +5,7 @@ from nltk import ngrams
 from collections import defaultdict
 from collections import Counter
 from nltk.tokenize import WhitespaceTokenizer
+import re
 
 class NGramEvaluate:
 
@@ -116,7 +117,7 @@ class NGramEvaluate:
         # Assemble formatted string
         k = 1
         return1 = ""
-        return1 = "<p>[{0}/{1}] - {2}:   ".format(page, line, speaker)
+        # return1 = "<p>[{0}/{1}] - {2}:   ".format(page, line, speaker)
         for pword in sentencepwords:
             if k in badngrams:
                 return1 += "<x>" + pword + "</x> "
@@ -124,12 +125,15 @@ class NGramEvaluate:
                 return1 += pword + " "
             k += 1
 
-        return1 += "</p>"
+        # return1 += "</p>"
 
         # with open('my_file.txt', 'a') as f:
         #     f.write(return1 + '\n')
 
         i = 10
+
+        # Clean up the marked up string to include only one start and one end marker
+        return1 = re.sub(r"</x> <x>", " ", return1)
 
         return return1
 
