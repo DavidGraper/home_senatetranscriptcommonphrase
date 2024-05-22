@@ -271,75 +271,68 @@ def preprocessmarkeduplines(markeduplines):
         # Transfer markup of sentence to markup of individual words
         markupindividualwords(markupranges, markedupline['pdfindexedtext'])
 
-        # For each individual text chunk to be underlined
-        # for phrase2underline in phrases2underline:
-
-            # Get starting position of the phrase to underline in actual line
-
-
-            # # Break the chunk into words
-            # phrasewords = phrase2underline.split(" ")
-            #
-            # # Walk through the dicts of pdf info for each word of transcriptline
-            # pdflinewordindex = 0
-            # toggle = False
-            #
-            # for phraseword in phrasewords:
-            #     for pdflinewordindex in range(len(pdflinewords)):
-            #         if phraseword == pdflinewords[pdflinewordindex]['pdfword']:
-            #             pdflinewords[pdflinewordindex]['toggle'] = True
-            #             break
-
-        # markedupline['pdfindexedtext'] = pdflinewords
-
 def convertmarkeduplinestodirectives(markeduplines):
 
     directives = {}
-
     pagedirectives = []
-
     annotatetextlines = []
 
     # Loop through every markedupline
     # For each page
     # Create a directive => page then collection of Line number / text to markup
-
-
     currentpage = 0
     annotatetextlines = []
 
     annotatepdfpage = 0
-    annotatepdftext = ""
+    annotatedpdftext = ""
+
+
 
     for markedupline in markeduplines:
 
         # Initialize current page from first line of marked up text
-        currentpage = markedupline['pdfindexedtext'][0]['pdfpage']
+        if currentpage == 0:
+            currentpage = markedupline['pdfindexedtext'][0]['pdfpage']
 
         # Loop through every word in pdfindexed text for the line
         for pdftext in markedupline['pdfindexedtext']:
 
-            # If page has incremented and there is something in the accumulator, write the accumulator to
-            # pagedirectives
-            if pdftext['pdfpage'] > currentpage:
-                if len(annotatepdftext) > 0:
-                    pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
-                    annotatepdftext = ""
-                    currentpage = pdftext['pdfpage']
-
             # If toggle "true", add word to accumulator
             if pdftext['toggle'] == True:
-                annotatepdftext += " " + pdftext['pdfword'] + " "
+                if pdftext['pdfpage'] == currentpage:
+                    annotatedpdftext += " " + pdftext['pdfword'] + " "
+                else:
+                    if len(annotatedpdftext) > 0:
+                        pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatedpdftext})
 
-            # If toggle "false" and accumulator has anything in it, add page directives
+                    annotatedpdftext = " " + pdftext['pdfword'] + " "
+                    currentpage = pdftext['pdfpage']
             else:
-                if len(annotatepdftext) > 0:
-                    pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
-                    annotatepdftext = ""
+                if len(annotatedpdftext) > 0:
+                    pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatedpdftext})
+                    annotatedpdftext = ""
+
+            # # If page has incremented and there is something in the accumulator, write the accumulator to
+            # # pagedirectives
+            # if pdftext['pdfpage'] > currentpage:
+            #     if len(annotatepdftext) > 0:
+            #         pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+            #         annotatepdftext = ""
+            #         currentpage = pdftext['pdfpage']
+            #
+            # # If toggle "true", add word to accumulator
+            # if pdftext['toggle'] == True:
+            #     annotatepdftext += " " + pdftext['pdfword'] + " "
+            #
+            # # If toggle "false" and accumulator has anything in it, add page directives
+            # else:
+            #     if len(annotatepdftext) > 0:
+            #         pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+            #         annotatepdftext = ""
 
         # Add the final chunk if it exists
-        if len(annotatepdftext) > 0:
-            pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+        if len(annotatedpdftext) > 0:
+            pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatedpdftext})
             annotatedpdftext = ""
 
     return pagedirectives
@@ -359,7 +352,7 @@ def convertmarkeduplinestodirectives(markeduplines):
 if __name__ == '__main__':
 
     # Hack - Load single file to process
-    filename2process = "2024-05-16.pdf"
+    filename2process = "2024-05-20.pdf"
     pdfDoc = fitz.open(filename2process)  # open a document
 
     # Set up a memory buffer to save the generated output PDF with highlighting
@@ -372,7 +365,7 @@ if __name__ == '__main__':
 
     # Pull all transcriptlines for the date
     transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
-                                      "where date='2024-05-16' limit 20")
+                                      "where date='2024-05-20'")
 
     # Scan all lines in transcript and mark any common phrases
     q1 = commonphraseregexcheck.DetermineCommonPhrases()
@@ -386,10 +379,10 @@ if __name__ == '__main__':
         for pdfresult in pdfresults:
             pdflinestohighlight.append(pdfresult)
 
-    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-16.pdf", pdflinestohighlight)
+    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-20.pdf", pdflinestohighlight)
 
     # Reactivate this to do quick jobs for Cathy
-    # exit()
+    exit()
 
     # Perform ngram evaluation of transcript lines that are not common phrases
     s1 = ngramlineevaluate.NGramEvaluate()
@@ -419,14 +412,14 @@ if __name__ == '__main__':
             #     transcriptline['text'] = markeduptext
             #     markeduplines.append(transcriptline)
 
-            preprocessmarkeduplines(markeduplines)
+            # 0522 preprocessmarkeduplines(markeduplines)
 
             i = 10
 
     # Convert into page / line directives
-    directives = convertmarkeduplinestodirectives(markeduplines)
+    # 0522 directives = convertmarkeduplinestodirectives(markeduplines)
 
-    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-16.pdf", markeduplines)
+    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-20.pdf", markeduplines)
 
     exit()
 
