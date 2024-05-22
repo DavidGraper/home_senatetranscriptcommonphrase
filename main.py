@@ -102,7 +102,7 @@ def highlight_pdffile(pdffilelines):
     pdfDoc.save(output_buffer)
     pdfDoc.close()
     # Save the output buffer to the output file
-    with open("2024-05-14_highlighted.pdf", mode='wb') as f:
+    with open("2024-05-16_highlighted.pdf", mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
 
@@ -209,10 +209,11 @@ def getnewname(transcriptlinein):
         for pdflineword in pdflinewords:
 
             if pdflineword == linewords[linewordindex]:
-                pdflinewordslist.append({'pdfpage':pdfline["pdfpage"],
-                                         'pdfline':pdfline["pdfline"],
-                                         'ordinal':ordinal,
-                                         'pdfword':pdflineword})
+                pdflinewordslist.append({'pdfpage': pdfline["pdfpage"],
+                                         'pdfline': pdfline["pdfline"],
+                                         'ordinal': ordinal,
+                                         'pdfword': pdflineword,
+                                         'toggle': False})
                 linewordindex += 1
                 ordinal += 1
 
@@ -223,11 +224,142 @@ def getnewname(transcriptlinein):
     return pdflinewordslist
 
 
+def getwordpositionrangesofsubstringsinstring(largerstring, substrings):
+
+    returnlist = []
+
+    largerstringwords = largerstring.split(" ")
+
+    pointer = 0
+
+    for substring in substrings:
+
+        substringwords = substring.split(" ")
+
+        start = pointer
+        stop = len(largerstringwords) - len(substringwords)
+
+        for x in range(start, stop):
+            if largerstringwords[x:x+len(substringwords)] == substringwords:
+                returnlist.append({'start': x, 'end': len(substringwords) + x})
+                pointer = x
+                break
+
+    return returnlist
+
+def markupindividualwords(markupranges, words):
+
+    for markuprange in markupranges:
+
+        for x in range(markuprange['start'], markuprange['end']):
+            words[x]['toggle'] = True
+
+
+def preprocessmarkeduplines(markeduplines):
+
+    for markedupline in markeduplines:
+
+        # Pull out the phrases in the text to be underlined
+        phrases2underline = re.findall(r"<x>(.*?)</x>", markedupline['markeduptext'])
+
+        # Create a temporary unmarked-up version of the line to use in finding starting positions of
+        # phrases to underline
+        unmarkedupline = markedupline['markeduptext'].replace("<x>","")
+        unmarkedupline = unmarkedupline.replace("</x>","")
+        markupranges = getwordpositionrangesofsubstringsinstring(unmarkedupline, phrases2underline)
+
+        # Transfer markup of sentence to markup of individual words
+        markupindividualwords(markupranges, markedupline['pdfindexedtext'])
+
+        # For each individual text chunk to be underlined
+        # for phrase2underline in phrases2underline:
+
+            # Get starting position of the phrase to underline in actual line
+
+
+            # # Break the chunk into words
+            # phrasewords = phrase2underline.split(" ")
+            #
+            # # Walk through the dicts of pdf info for each word of transcriptline
+            # pdflinewordindex = 0
+            # toggle = False
+            #
+            # for phraseword in phrasewords:
+            #     for pdflinewordindex in range(len(pdflinewords)):
+            #         if phraseword == pdflinewords[pdflinewordindex]['pdfword']:
+            #             pdflinewords[pdflinewordindex]['toggle'] = True
+            #             break
+
+        # markedupline['pdfindexedtext'] = pdflinewords
+
+def convertmarkeduplinestodirectives(markeduplines):
+
+    directives = {}
+
+    pagedirectives = []
+
+    annotatetextlines = []
+
+    # Loop through every markedupline
+    # For each page
+    # Create a directive => page then collection of Line number / text to markup
+
+
+    currentpage = 0
+    annotatetextlines = []
+
+    annotatepdfpage = 0
+    annotatepdftext = ""
+
+    for markedupline in markeduplines:
+
+        # Initialize current page from first line of marked up text
+        currentpage = markedupline['pdfindexedtext'][0]['pdfpage']
+
+        # Loop through every word in pdfindexed text for the line
+        for pdftext in markedupline['pdfindexedtext']:
+
+            # If page has incremented and there is something in the accumulator, write the accumulator to
+            # pagedirectives
+            if pdftext['pdfpage'] > currentpage:
+                if len(annotatepdftext) > 0:
+                    pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+                    annotatepdftext = ""
+                    currentpage = pdftext['pdfpage']
+
+            # If toggle "true", add word to accumulator
+            if pdftext['toggle'] == True:
+                annotatepdftext += " " + pdftext['pdfword'] + " "
+
+            # If toggle "false" and accumulator has anything in it, add page directives
+            else:
+                if len(annotatepdftext) > 0:
+                    pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+                    annotatepdftext = ""
+
+        # Add the final chunk if it exists
+        if len(annotatepdftext) > 0:
+            pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+            annotatedpdftext = ""
+
+    return pagedirectives
+        # if markedupline[2] != currentpage:
+        #     directives = {'page': currentpage,
+        #                   'annotatelines': annotatetextlines}
+        #
+        #     annotatetextlines = []
+        #
+        # if markedupline[0] == currentpage:
+        #     i = 10
+
+
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
     # Hack - Load single file to process
-    filename2process = "2024-05-14.pdf"
+    filename2process = "2024-05-16.pdf"
     pdfDoc = fitz.open(filename2process)  # open a document
 
     # Set up a memory buffer to save the generated output PDF with highlighting
@@ -240,7 +372,7 @@ if __name__ == '__main__':
 
     # Pull all transcriptlines for the date
     transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
-                                      "where date='2024-05-14' limit 10")
+                                      "where date='2024-05-16' limit 20")
 
     # Scan all lines in transcript and mark any common phrases
     q1 = commonphraseregexcheck.DetermineCommonPhrases()
@@ -254,7 +386,10 @@ if __name__ == '__main__':
         for pdfresult in pdfresults:
             pdflinestohighlight.append(pdfresult)
 
-    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-14.pdf", pdflinestohighlight)
+    ProcessPDFFile.CreateHighlightedPDFFile("2024-05-16.pdf", pdflinestohighlight)
+
+    # Reactivate this to do quick jobs for Cathy
+    # exit()
 
     # Perform ngram evaluation of transcript lines that are not common phrases
     s1 = ngramlineevaluate.NGramEvaluate()
@@ -276,17 +411,25 @@ if __name__ == '__main__':
             # Create a marked up transcriptline
             markeduptext = s1.trigramtestsentence(transcriptline, 0)
 
-            markeduplines.append([markeduptext, pdfindexedtext])
+            markeduplines.append({'markeduptext': markeduptext,
+                                  'pdfindexedtext': pdfindexedtext})
+
             # # Save any transcriptlines with markup in its text
             # if "<x>" in markeduptext:
             #     transcriptline['text'] = markeduptext
             #     markeduplines.append(transcriptline)
 
+            preprocessmarkeduplines(markeduplines)
+
             i = 10
 
-    # Break down sentenc
+    # Convert into page / line directives
+    directives = convertmarkeduplinestodirectives(markeduplines)
 
-    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-14.pdf", markeduplines)
+    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-16.pdf", markeduplines)
+
+    exit()
+
 
     r1 = spellcheck.CheckSpelling()
     misspelledwords = r1.getmisspelledwords(transcriptlines)
@@ -338,7 +481,7 @@ if __name__ == '__main__':
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
     transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines "
-                                      "where date='2024-05-14'")
+                                      "where date='2024-05-16'")
 
     transcriptlinecount = 0
     matchlinecount = 0
@@ -376,7 +519,7 @@ if __name__ == '__main__':
                 break
 
     # highlight_pdffile(pdflinestohighlight)
-    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-14.pdf", pdflinestohighlight)
+    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-16.pdf", pdflinestohighlight)
 
     # Spellchecking
 

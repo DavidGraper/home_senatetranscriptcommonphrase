@@ -70,31 +70,37 @@ def CreateUnderlinedPDFFile(filename, markeduplines):
     # Set up a memory buffer to save the generated output PDF with highlighting
     output_buffer = BytesIO()
 
-    for markedupline in markeduplines:
+    # for markedupline in markeduplines:
 
-        # Pull out the phrases in the text to be underlined
-        phrases2underline = re.findall(r"<x>(.*?)</x>", markedupline[0])
+        # Loop through markeduplines by pdf page
 
-        # Get dicts of pdf page/line info for each word of transcript line
-        pdflinewords = markedupline[1]
+        #
+        # # Pull out the phrases in the text to be underlined
+        # phrases2underline = re.findall(r"<x>(.*?)</x>", markedupline[0])
+        #
+        # # Get dicts of pdf page/line info for each word of transcript line
+        # pdflinewords = markedupline[1]
+        #
+        # # For each individual text chunk to be undderlined
+        # for phrase2underline in phrases2underline:
+        #
+        #     # Break the chunk into words
+        #     phrasewords = phrase2underline.split(" ")
+        #
+        #     # Walk through the dicts of pdf info for each word of transcriptline
+        #     pdflinewordindex = 0
+        #     toggle = False
+        #
+        #     for phraseword in phrasewords:
+        #         for pdflinewordindex in range(len(pdflinewords)):
+        #             if phraseword == pdflinewords[pdflinewordindex]['pdfword']:
+        #                 pdflinewords[pdflinewordindex]['toggle'] = True
+        #                 break
 
-        # For each individual text chunk to be undderlined
-        for phrase2underline in phrases2underline:
-
-            # Break the chunk into words
-            phrasewords = phrase2underline.split(" ")
-
-            # Walk through the dicts of pdf info for each word of transcriptline
-            pdflinewordindex = 0
-            toggle = False
-
-            for phraseword in phrasewords:
-                if phraseword == pdflinewords[pdflinewordindex]['pdfword']:
-                    toggle = True
-                pdflinewordindex += 1
 
 
-            i = 10
+            # Walk through pdflinewords collection, one page at a time
+
 
         # Seek phrases2underline strings in the pdflinewords list to get
 
