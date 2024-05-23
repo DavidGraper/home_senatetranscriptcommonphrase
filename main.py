@@ -323,7 +323,7 @@ def convertmarkeduplinestodirectives(markeduplines):
             # pagedirectives
             if pdftext['pdfpage'] > currentpage:
                 if len(annotatepdftext) > 0:
-                    pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+                    pagedirectives.append({'pdfpage': currentpage, 'pdfline': pdftext['pdfline'], 'pdftext': annotatepdftext})
                     annotatepdftext = ""
                     currentpage = pdftext['pdfpage']
 
@@ -334,12 +334,12 @@ def convertmarkeduplinestodirectives(markeduplines):
             # If toggle "false" and accumulator has anything in it, add page directives
             else:
                 if len(annotatepdftext) > 0:
-                    pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+                    pagedirectives.append({'pdfpage': currentpage, 'pdfline': pdftext['pdfline'], 'pdftext': annotatepdftext})
                     annotatepdftext = ""
 
         # Add the final chunk if it exists
         if len(annotatepdftext) > 0:
-            pagedirectives.append({'pdfpage': currentpage, 'pdftext': annotatepdftext})
+            pagedirectives.append({'pdfpage': currentpage, 'pdfline': pdftext['pdfline'], 'pdftext': annotatepdftext})
             annotatedpdftext = ""
 
     return pagedirectives
@@ -426,7 +426,7 @@ if __name__ == '__main__':
     # Convert into page / line directives
     directives = convertmarkeduplinestodirectives(markeduplines)
 
-    ProcessPDFFile.CreateUnderlinedPDFFile("2024-05-16.pdf", markeduplines)
+    ProcessPDFFile.AnnotatePDFFile("2024-05-16.pdf", directives)
 
     exit()
 
@@ -481,7 +481,7 @@ if __name__ == '__main__':
     pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
 
     transcriptlines = sql1.select_all("select id, page, line, text from transcriptlines "
-                                      "where date='2024-05-16'")
+                                      "where date='2024-05-16' limit 20")
 
     transcriptlinecount = 0
     matchlinecount = 0
