@@ -173,7 +173,7 @@ def CreateUnderlinedPDFFile(filename, markeduplines):
     with open(newfilename, mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
-def AnnotatePDFFile(filename, linedirectives):
+def AnnotatePDFFile(filename, linedirectives, highlightcolor):
 
     # The database stores all transcripts in two tables:
     #
@@ -188,6 +188,15 @@ def AnnotatePDFFile(filename, linedirectives):
     #
     # The first table is used for NLP, the second table is used for marking up a PDF file
 
+    if highlightcolor == "pink":
+        strokecolor = {"stroke": (1, .8, .8)}
+    elif highlightcolor == "green":
+        strokecolor = {"stroke": (0, 1, 0)}
+
+    # Default color is yellow
+    else:
+        strokecolor = {"stroke": (1, 1, 0)}
+
     pdfDoc = fitz.open(filename)  # open a document
 
     # Set up a memory buffer to save the generated output PDF with highlighting
@@ -196,38 +205,42 @@ def AnnotatePDFFile(filename, linedirectives):
     for linedirective in linedirectives:
 
         # Get the page, line, and text of that pdfline
-        page2update = int(pdflinetohighlight["pdfpage"]) - 1
-        line2update = int(pdflinetohighlight["pdfline"]) - 1
-        text2update = pdflinetohighlight["pdftext"]
+        page2update = linedirective["pdfpage"] - 1
+        line2update = linedirective["pdfline"] - 1
+        text2update = linedirective["pdftext"]
 
         # Cache the relevant pdf page
         page = pdfDoc[page2update]
 
-        # Split the pdf page's text into individual lines of text
-        page_lines = page.get_text("text").split('\n')
-
-        # # DIAGNOSTIC
-        # content = page.get_text("dict")
-        #
-        # f = open("dictfile.txt", "a")
-        # f.write(content)
-        # f.close()
-
-        # Get the text of this pdfline to highlight
-        # Get the individual text of that specific line and call it the "needle"
-        needle = page_lines[line2update]
+        # Load stacked dictionary object representation of page
+        content = page.get_text("dict")
 
         # Scan the pdf page looking for the page rectangle that holds that needle
-        cliprect = page.search_for(needle)
+        testtext = content['blocks'][line2update]['lines'][0]['spans'][0]['text']
+        cliprect = content['blocks'][line2update]['bbox']
 
-        # Within that needle, look for the text
+        # content['blocks'][24]['bbox']
+        # content['blocks'][24]['lines'][0]['spans'][0]['text']
+
+
+        # Within that cliprect, look for the text
         try:
-            the_rect = page.search_for(text2update, clip=cliprect[0])
+            the_rect = page.search_for(text2update, clip=cliprect)
+
+            i = 10
         except:
             print("Fail on page.search_for '{0}'".format(text2update))
 
         # Update the highlighting on the page
         highlight = page.add_highlight_annot(the_rect)
+        highlight.set_colors(strokecolor)
+        # # Pink
+        # highlight.set_colors({"stroke": (1, .8, .8)})
+        # # Green
+        # highlight.set_colors({"stroke": (0, 1, 0)})
+        # # Yellow
+        # highlight.set_colors({"stroke": (1, 1, 0)})
+
         highlight.update()
 
     # Write the highlighted pdf original out to a buffer and close the original

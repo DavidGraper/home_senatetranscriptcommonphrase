@@ -284,8 +284,6 @@ def preprocessmarkeduplines(markeduplines):
             # pdflinewordindex = 0
             # toggle = False
             #
-            # for phraseword in phrasewords:
-            #     for pdflinewordindex in range(len(pdflinewords)):
             #         if phraseword == pdflinewords[pdflinewordindex]['pdfword']:
             #             pdflinewords[pdflinewordindex]['toggle'] = True
             #             break
@@ -294,72 +292,230 @@ def preprocessmarkeduplines(markeduplines):
 
 def convertmarkeduplinestodirectives(markeduplines):
 
-    directives = {}
-
     pagedirectives = []
-
-    annotatetextlines = []
-
-    # Loop through every markedupline
-    # For each page
-    # Create a directive => page then collection of Line number / text to markup
-
-
-    currentpage = 0
-    annotatetextlines = []
-
-    annotatepdfpage = 0
-    annotatepdftext = ""
 
     for markedupline in markeduplines:
 
-        # Initialize current page from first line of marked up text
-        currentpage = markedupline['pdfindexedtext'][0]['pdfpage']
+        # Initialize current page
+        currentpdfpage = 0
+        currentpdfword = 0
+        currentpdfline = 0
+        currenttoggle = False
+
+        annotatedpdftext = ""
+
+        previouspdfpage = 0
+        previouspdfline = 0
+        previouspdfword = ""
+        previoustoggle = False
 
         # Loop through every word in pdfindexed text for the line
         for pdftext in markedupline['pdfindexedtext']:
 
+            currentpdfpage = pdftext["pdfpage"]
+            currentpdfline = pdftext["pdfline"]
+            currentpdfword = pdftext["pdfword"]
+            currenttoggle = pdftext["toggle"]
+
             # If page has incremented and there is something in the accumulator, write the accumulator to
             # pagedirectives
-            if pdftext['pdfpage'] > currentpage:
-                if len(annotatepdftext) > 0:
-                    pagedirectives.append({'pdfpage': currentpage, 'pdfline': pdftext['pdfline'], 'pdftext': annotatepdftext})
-                    annotatepdftext = ""
-                    currentpage = pdftext['pdfpage']
+            if currentpdfpage > previouspdfpage:
+                if len(annotatedpdftext) > 0:
+                    pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline, 'pdftext': annotatedpdftext.strip(),
+                    'highlighttype': "NoTrigramMatch"})
+                    annotatedpdftext = ""
 
-            # If toggle "true", add word to accumulator
-            if pdftext['toggle'] == True:
-                annotatepdftext += " " + pdftext['pdfword'] + " "
 
-            # If toggle "false" and accumulator has anything in it, add page directives
+                previouspdfline = currentpdfline
+                previouspdfword = currentpdfword
+                previouspdfpage = currentpdfpage
+                previoustoggle = currenttoggle
+
+
+                continue
+
+            # If line has incremented and there is something in the accumulator, write the accumulator to
+            # pagedirectives
+            if currentpdfline > previouspdfline:
+                if len(annotatedpdftext) > 0:
+                    pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline, 'pdftext': annotatedpdftext.strip(),
+                                           'highlighttype': "NoTrigramMatch"})
+
+                    annotatedpdftext = currentpdfword
+
+                previouspdfline = currentpdfline
+                previouspdfword = currentpdfword
+                previouspdfpage = currentpdfpage
+                previoustoggle = currenttoggle
+
+                continue
+
+            # If toggle "true", add word to accumulator, else if there's anything in the accumulator add
+            # it to the list of directives
+            if currenttoggle:
+                annotatedpdftext += " " + currentpdfword + " "
             else:
-                if len(annotatepdftext) > 0:
-                    pagedirectives.append({'pdfpage': currentpage, 'pdfline': pdftext['pdfline'], 'pdftext': annotatepdftext})
-                    annotatepdftext = ""
+                if len(annotatedpdftext) > 0:
+                    pagedirectives.append({'pdfpage': currentpdfpage, 'pdfline': currentpdfline,
+                                           'pdftext': annotatedpdftext.strip(),
+                                           'highlighttype': "NoTrigramMatch"})
+
+                    annotatedpdftext = ""
+
+            previouspdfline = currentpdfline
+            previouspdfword = currentpdfword
+            previouspdfpage = currentpdfpage
+            previoustoggle = currenttoggle
 
         # Add the final chunk if it exists
-        if len(annotatepdftext) > 0:
-            pagedirectives.append({'pdfpage': currentpage, 'pdfline': pdftext['pdfline'], 'pdftext': annotatepdftext})
-            annotatedpdftext = ""
+        if len(annotatedpdftext) > 0:
+            pagedirectives.append({'pdfpage': currentpdfpage, 'pdfline': currentpdfline,
+                                   'pdftext': annotatedpdftext.strip(),
+                                   'highlighttype': "NoTrigramMatch"})
 
     return pagedirectives
-        # if markedupline[2] != currentpage:
-        #     directives = {'page': currentpage,
-        #                   'annotatelines': annotatetextlines}
-        #
-        #     annotatetextlines = []
-        #
-        # if markedupline[0] == currentpage:
-        #     i = 10
+
+def convertcommonphraselinestodirectives(markeduplines):
+
+    pagedirectives = []
+
+    for markedupline in markeduplines:
+
+        firstflag = True
+
+        # Loop through every word in pdfindexed text for the line
+        for pdfword in markedupline['pdfindexedtext']:
+
+            currentpdfpage = pdfword["pdfpage"]
+            currentpdfline = pdfword["pdfline"]
+            currentpdfword = pdfword["pdfword"]
+
+            if firstflag:
+
+                annotatedpdftext = currentpdfword
+
+                previouspdfpage = currentpdfpage
+                previouspdfline = currentpdfline
+                previouspdfword = currentpdfword
+
+                firstflag = False
+
+            else:
+
+                # If page has incremented and there is something in the accumulator, write the accumulator to
+                # pagedirectives
+
+                if currentpdfpage > previouspdfpage:
+                    if len(annotatedpdftext) > 0:
+                        pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline,
+                                               'pdftext': annotatedpdftext.strip(),
+                                               'highlighttype': "CommonPhrase"})
+                        annotatedpdftext = ""
+
+                        previouspdfline = currentpdfline
+                        previouspdfword = currentpdfword
+                        previouspdfpage = currentpdfpage
+
+                        continue
+
+                # If line has incremented and there is something in the accumulator, write the accumulator to
+                # pagedirectives
+
+                if currentpdfline > previouspdfline:
+                    if len(annotatedpdftext) > 0:
+                        pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline,
+                                               'pdftext': annotatedpdftext.strip(),
+                                               'highlighttype': "CommonPhrase"})
+
+                        annotatedpdftext = currentpdfword
+
+                        previouspdfline = currentpdfline
+                        previouspdfword = currentpdfword
+                        previouspdfpage = currentpdfpage
+
+                        continue
+
+                annotatedpdftext = annotatedpdftext + " " + currentpdfword
+                previouspdfline = currentpdfline
+                previouspdfword = currentpdfword
+                previouspdfpage = currentpdfpage
+
+        # Add the final chunk if it exists
+        if len(annotatedpdftext) > 0:
+            pagedirectives.append({'pdfpage': currentpdfpage, 'pdfline': currentpdfline,
+                                   'pdftext': annotatedpdftext.strip(),
+                                   'highlighttype': "CommonPhrase"})
+
+    return pagedirectives
 
 
+
+def diagnostic():
+
+    filename2process = "2024-05-21.pdf"
+    pdfDoc = fitz.open(filename2process)  # open a document
+
+
+    markeduplines = []
+    commonphraselines = []
+
+    # Pull all transcriptlines for the date
+    transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
+                                      "where date = '2024-05-21'")
+                                      # "where id = 2086656")
+
+    q1 = commonphraseregexcheck.DetermineCommonPhrases()
+    # commonphraselines = q1.getcommonphrasetranscriptlines(transcriptlines)
+
+    # directives = convertcommonphraselinestodirectives(commonphraselines)
+
+    for transcriptline in transcriptlines:
+
+        # Diagnostic
+        print(transcriptline["text"])
+
+        if q1.iscommonphrasetranscriptlines(transcriptline['text']):
+            pdfindexedtext = getnewname(transcriptline)
+            commonphraselines.append({'markeduptext': transcriptline['text'], 'pdfindexedtext': pdfindexedtext})
+
+        else:
+
+            # Create a completely pdf-indexed version of the transcriptline
+            pdfindexedtext = getnewname(transcriptline)
+
+            # If the text of the transcriptline is a "common phrase", add to "commonphraselines"
+
+            # Create a marked up transcriptline
+            markeduptext = s1.trigramtestsentence(transcriptline, 0)
+
+            markeduplines.append({'markeduptext': markeduptext,
+                                  'pdfindexedtext': pdfindexedtext})
+
+    preprocessmarkeduplines(markeduplines)
+
+    # Convert into page / line directives
+    directives = convertmarkeduplinestodirectives(markeduplines)
+
+    directives1 = convertcommonphraselinestodirectives(commonphraselines)
+
+    ProcessPDFFile.AnnotatePDFFile("2024-05-21.pdf", directives, "pink")
+    ProcessPDFFile.AnnotatePDFFile("2024-05-21_highlighted.pdf", directives1, "green")
+
+    exit()
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
+    sql1 = SenateSQLDB.SenateTranscript()
+    pdf1 = SenateSQLDB.SenateTranscriptPDFLines()
+    s1 = ngramlineevaluate.NGramEvaluate()
+    markeduplines = []
+
+    diagnostic()
+
     # Hack - Load single file to process
-    filename2process = "2024-05-16.pdf"
+    filename2process = "2024-05-21.pdf"
     pdfDoc = fitz.open(filename2process)  # open a document
 
     # Set up a memory buffer to save the generated output PDF with highlighting
@@ -372,7 +528,7 @@ if __name__ == '__main__':
 
     # Pull all transcriptlines for the date
     transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
-                                      "where date='2024-05-16' limit 20")
+                                      "where date='2024-05-21'")
 
     # Scan all lines in transcript and mark any common phrases
     q1 = commonphraseregexcheck.DetermineCommonPhrases()
@@ -388,8 +544,8 @@ if __name__ == '__main__':
 
     ProcessPDFFile.CreateHighlightedPDFFile("2024-05-16.pdf", pdflinestohighlight)
 
-    # Reactivate this to do quick jobs for Cathy
-    # exit()
+    # # Reactivate this to do quick jobs for Cathy
+    exit()
 
     # Perform ngram evaluation of transcript lines that are not common phrases
     s1 = ngramlineevaluate.NGramEvaluate()
@@ -413,11 +569,6 @@ if __name__ == '__main__':
 
             markeduplines.append({'markeduptext': markeduptext,
                                   'pdfindexedtext': pdfindexedtext})
-
-            # # Save any transcriptlines with markup in its text
-            # if "<x>" in markeduptext:
-            #     transcriptline['text'] = markeduptext
-            #     markeduplines.append(transcriptline)
 
             preprocessmarkeduplines(markeduplines)
 

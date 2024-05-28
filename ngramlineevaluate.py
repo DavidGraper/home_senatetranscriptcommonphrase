@@ -81,9 +81,9 @@ class NGramEvaluate:
             sentencetrigramtext = "{0} {1} {2}".format(sentencengram[0], sentencengram[1], sentencengram[2])
             sentencenextword = sentencengram[3]
 
-            print("***")
-            print("Seeking trigram: '{0}'".format(sentencetrigramtext))
-            print("with nextword: '{0}'".format(sentencenextword))
+            # print("***")
+            # print("Seeking trigram: '{0}'".format(sentencetrigramtext))
+            # print("with nextword: '{0}'".format(sentencenextword))
 
             ngramdistribution = self.sdb.gettrigraminfo(sentencetrigramtext)
 

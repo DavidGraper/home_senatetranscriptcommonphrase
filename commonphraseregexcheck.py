@@ -30,6 +30,22 @@ class DetermineCommonPhrases:
 
         return commonphrases
 
+    def iscommonphrasetranscriptlines(self, transcriptlinetext):
+
+        returnval = False
+
+        for senateregex in self.senateregexes:
+            if re.match(senateregex, transcriptlinetext):
+                returnval = True
+                break
+
+        for senatorregex in self.senatorregexes:
+            if re.match(senatorregex, transcriptlinetext):
+                returnval = True
+                break
+
+        return returnval
+
     def loadsenatorregexes(self):
 
         returnlines = []
