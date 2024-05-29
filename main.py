@@ -293,21 +293,12 @@ def preprocessmarkeduplines(markeduplines):
 def convertmarkeduplinestodirectives(markeduplines):
 
     pagedirectives = []
+    annotatedpdftext = ""
 
     for markedupline in markeduplines:
 
-        # Initialize current page
-        currentpdfpage = 0
-        currentpdfword = 0
-        currentpdfline = 0
-        currenttoggle = False
-
+        firstflag = True
         annotatedpdftext = ""
-
-        previouspdfpage = 0
-        previouspdfline = 0
-        previouspdfword = ""
-        previoustoggle = False
 
         # Loop through every word in pdfindexed text for the line
         for pdftext in markedupline['pdfindexedtext']:
@@ -317,43 +308,84 @@ def convertmarkeduplinestodirectives(markeduplines):
             currentpdfword = pdftext["pdfword"]
             currenttoggle = pdftext["toggle"]
 
-            # If page has incremented and there is something in the accumulator, write the accumulator to
-            # pagedirectives
-            if currentpdfpage > previouspdfpage:
-                if len(annotatedpdftext) > 0:
-                    pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline, 'pdftext': annotatedpdftext.strip(),
-                    'highlighttype': "NoTrigramMatch"})
-                    annotatedpdftext = ""
+            if currentpdfpage == 3 and currentpdfline == 7:
+                i = 10
 
+            if firstflag:
 
+                if currenttoggle:
+                    annotatedpdftext = currentpdfword
+
+                previouspdfpage = currentpdfpage
                 previouspdfline = currentpdfline
                 previouspdfword = currentpdfword
-                previouspdfpage = currentpdfpage
                 previoustoggle = currenttoggle
 
+                firstflag = False
 
                 continue
+
+            else:
+
+                # If page has incremented and there is something in the accumulator, write the accumulator to
+                # pagedirectives
+
+                if currentpdfpage > previouspdfpage:
+                    if len(annotatedpdftext) > 0:
+                        pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline,
+                                               'pdftext': annotatedpdftext.strip(),
+                                               'highlighttype': "NoTrigramMatch"})
+
+                    if currenttoggle:
+                        annotatedpdftext = currentpdfword
+                    else:
+                        annotatedpdftext = ''
+
+                    previouspdfline = currentpdfline
+                    previouspdfword = currentpdfword
+                    previouspdfpage = currentpdfpage
+                    previoustoggle = currenttoggle
+
+                    continue
 
             # If line has incremented and there is something in the accumulator, write the accumulator to
             # pagedirectives
             if currentpdfline > previouspdfline:
                 if len(annotatedpdftext) > 0:
-                    pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline, 'pdftext': annotatedpdftext.strip(),
+                    pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline,
+                                           'pdftext': annotatedpdftext.strip(),
                                            'highlighttype': "NoTrigramMatch"})
+                    if currenttoggle:
+                        annotatedpdftext = currentpdfword
+                    else:
+                        annotatedpdftext = ''
 
-                    annotatedpdftext = currentpdfword
+                    previouspdfline = currentpdfline
+                    previouspdfword = currentpdfword
+                    previouspdfpage = currentpdfpage
+                    previoustoggle = currenttoggle
+
+                    continue
+
+                if currenttoggle:
+                    annotatedpdftext = annotatedpdftext + " " + currentpdfword
 
                 previouspdfline = currentpdfline
                 previouspdfword = currentpdfword
                 previouspdfpage = currentpdfpage
                 previoustoggle = currenttoggle
 
-                continue
 
             # If toggle "true", add word to accumulator, else if there's anything in the accumulator add
             # it to the list of directives
             if currenttoggle:
                 annotatedpdftext += " " + currentpdfword + " "
+
+                previouspdfline = currentpdfline
+                previouspdfword = currentpdfword
+                previouspdfpage = currentpdfpage
+                previoustoggle = currenttoggle
+
             else:
                 if len(annotatedpdftext) > 0:
                     pagedirectives.append({'pdfpage': currentpdfpage, 'pdfline': currentpdfline,
@@ -362,16 +394,20 @@ def convertmarkeduplinestodirectives(markeduplines):
 
                     annotatedpdftext = ""
 
-            previouspdfline = currentpdfline
-            previouspdfword = currentpdfword
-            previouspdfpage = currentpdfpage
-            previoustoggle = currenttoggle
+                previouspdfline = currentpdfline
+                previouspdfword = currentpdfword
+                previouspdfpage = currentpdfpage
+                previoustoggle = currenttoggle
 
         # Add the final chunk if it exists
         if len(annotatedpdftext) > 0:
             pagedirectives.append({'pdfpage': currentpdfpage, 'pdfline': currentpdfline,
                                    'pdftext': annotatedpdftext.strip(),
                                    'highlighttype': "NoTrigramMatch"})
+            previouspdfline = currentpdfline
+            previouspdfword = currentpdfword
+            previouspdfpage = currentpdfpage
+            previoustoggle = currenttoggle
 
     return pagedirectives
 
@@ -461,7 +497,7 @@ def diagnostic():
 
     # Pull all transcriptlines for the date
     transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
-                                      "where date = '2024-05-21'")
+                                      "where date = '2024-05-21' limit 50")
                                       # "where id = 2086656")
 
     q1 = commonphraseregexcheck.DetermineCommonPhrases()
@@ -498,10 +534,34 @@ def diagnostic():
 
     directives1 = convertcommonphraselinestodirectives(commonphraselines)
 
+    # Diagnostics
+    writemarkeduplinestotextfile(markeduplines)
+    writedirectivestotextfile(directives)
+
+
     ProcessPDFFile.AnnotatePDFFile("2024-05-21.pdf", directives, "pink")
     ProcessPDFFile.AnnotatePDFFile("2024-05-21_highlighted.pdf", directives1, "green")
 
     exit()
+
+def writemarkeduplinestotextfile(markeduplines):
+
+    f = open("markeduplines.txt", "w")
+
+    for markedupline in markeduplines:
+        f.write(markedupline["markeduptext"] + "\n")
+
+    f.close()
+
+def writedirectivestotextfile(directives):
+
+    f = open("directives.txt", "w")
+
+    for directive in directives:
+        f.write("page: " + str(directive["pdfpage"]) + ", line:  " +
+        str(directive["pdfline"]) + ", text: " + directive["pdftext"] + "\n")
+
+    f.close()
 
 
 # Press the green button in the gutter to run the script.
