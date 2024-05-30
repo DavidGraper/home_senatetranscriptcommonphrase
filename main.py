@@ -308,7 +308,8 @@ def convertmarkeduplinestodirectives(markeduplines):
             currentpdfword = pdftext["pdfword"]
             currenttoggle = pdftext["toggle"]
 
-            if currentpdfpage == 3 and currentpdfline == 7:
+            # if currentpdfword == "Asian-American":
+            if currentpdfpage == 18 and currentpdfline == 21:
                 i = 10
 
             if firstflag:
@@ -411,6 +412,74 @@ def convertmarkeduplinestodirectives(markeduplines):
 
     return pagedirectives
 
+def convertmarkeduplinestodirectives2(markeduplines):
+
+    pagedirectives = []
+    annotatedpdftext = ""
+
+    for markedupline in markeduplines:
+
+        firstword = True
+        annotatedpdftext = ""
+
+        # Loop through every word in pdfindexed text for the line
+        for pdftext in markedupline['pdfindexedtext']:
+
+            currentpdfpage = pdftext["pdfpage"]
+            currentpdfline = pdftext["pdfline"]
+            currentpdfword = pdftext["pdfword"]
+            currenttoggle = pdftext["toggle"]
+
+
+            # On first word in sentence, cache all the current word's pdf position settings into the "previous"
+            # variables and move to next word
+            if firstword:
+
+                previouspdfpage = currentpdfpage
+                previouspdfline = currentpdfline
+                previouspdfword = currentpdfword
+                previoustoggle = currenttoggle
+
+                firstword = False
+
+                continue
+
+            # Set decision flags
+            EndOfGroupFlag = (currenttoggle == False) and (previoustoggle == True)
+            EndOfPageFlag = not(currentpdfpage == previouspdfpage)
+            EndOfLineFlag = not(currentpdfline == previouspdfline)
+
+            if EndOfGroupFlag:
+                if annotatedpdftext != "":
+                    pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline,
+                                           'pdftext': annotatedpdftext.strip(),
+                                           'highlighttype': "NoTrigramMatch"})
+                annotatedpdftext = ""
+            else:
+                if EndOfPageFlag or EndOfLineFlag:
+                    if annotatedpdftext != "":
+                        pagedirectives.append({'pdfpage': previouspdfpage, 'pdfline': previouspdfline,
+                                               'pdftext': annotatedpdftext.strip(),
+                                               'highlighttype': "NoTrigramMatch"})
+                    annotatedpdftext = ""
+
+            # If the word is toggled, first step is to add to text accumulator
+            if currenttoggle:
+                annotatedpdftext = annotatedpdftext + " " + currentpdfword
+
+            previouspdfline = currentpdfline
+            previouspdfword = currentpdfword
+            previouspdfpage = currentpdfpage
+            previoustoggle = currenttoggle
+
+        # If the end of sentence reached, write out final directive
+        if len(annotatedpdftext) > 0:
+            pagedirectives.append({'pdfpage': currentpdfpage, 'pdfline': currentpdfline,
+                                   'pdftext': annotatedpdftext.strip(),
+                                   'highlighttype': "NoTrigramMatch"})
+
+    return pagedirectives
+
 def convertcommonphraselinestodirectives(markeduplines):
 
     pagedirectives = []
@@ -485,6 +554,50 @@ def convertcommonphraselinestodirectives(markeduplines):
     return pagedirectives
 
 
+def convertmisspelledwordstodirectives(misspelledwords):
+
+    pagedirectives = []
+
+    r1 = SenateSQLDB.GetPDFFileInfoForTranscriptLine()
+
+    return1 = []
+
+    for misspelledword in misspelledwords:
+
+        results = r1.getpdffileinfo(misspelledword["transcriptlineid"])
+
+        for result in results:
+            if misspelledword["text"] in result["pdftext"]:
+                pdfline = result["pdfline"]
+                pdfpage = result["pdfpage"]
+
+                return1.append({"pdfpage": pdfpage, "pdfline": pdfline, "pdftext": misspelledword["text"], "highlighttype": "Misspell"})
+
+                break
+
+    return return1
+
+
+
+
+    # for misspelledword in misspelledwords:
+    #
+    #     pdfpage = misspelledword['page']
+    #
+    #     # HACK
+    #     pdfline = misspelledword['line'] + 1
+    #     pdftext = misspelledword['text']
+    #
+    #     pagedirectives.append({'pdfpage': pdfpage,
+    #                            'pdfline': pdfline,
+    #                            'pdftext': pdftext,
+    #                            'highlighttype': "CommonPhrase"})
+
+    return pagedirectives
+
+def getpageandlineofwordintranscriptline(transcriptline):
+    i = 10
+
 
 def diagnostic():
 
@@ -494,10 +607,11 @@ def diagnostic():
 
     markeduplines = []
     commonphraselines = []
+    misspelledwordlines = []
 
     # Pull all transcriptlines for the date
     transcriptlines = sql1.select_all("select id, speaker, page, line, text from transcriptlines "
-                                      "where date = '2024-05-21' limit 50")
+                                      "where date = '2024-05-21'")
                                       # "where id = 2086656")
 
     q1 = commonphraseregexcheck.DetermineCommonPhrases()
@@ -524,13 +638,16 @@ def diagnostic():
             # Create a marked up transcriptline
             markeduptext = s1.trigramtestsentence(transcriptline, 0)
 
-            markeduplines.append({'markeduptext': markeduptext,
+            # Diagnostic
+            markeduptextbi = s1.bigramtestsentence(transcriptline, 0)
+
+            markeduplines.append({'markeduptext': markeduptextbi,
                                   'pdfindexedtext': pdfindexedtext})
 
     preprocessmarkeduplines(markeduplines)
 
     # Convert into page / line directives
-    directives = convertmarkeduplinestodirectives(markeduplines)
+    directives = convertmarkeduplinestodirectives2(markeduplines)
 
     directives1 = convertcommonphraselinestodirectives(commonphraselines)
 
@@ -538,10 +655,33 @@ def diagnostic():
     writemarkeduplinestotextfile(markeduplines)
     writedirectivestotextfile(directives)
 
+    ProcessPDFFile.AnnotatePDFFile("2024-05-21.pdf", directives, "highlight", "pink")
+    ProcessPDFFile.AnnotatePDFFile("2024-05-21_highlighted.pdf", directives1, "highlight", "green")
 
-    ProcessPDFFile.AnnotatePDFFile("2024-05-21.pdf", directives, "pink")
-    ProcessPDFFile.AnnotatePDFFile("2024-05-21_highlighted.pdf", directives1, "green")
+    r1 = spellcheck.CheckSpelling()
 
+    misspelledwords = r1.getmisspelledwords(transcriptlines)
+
+    # HACK HACK HACK
+    # flag1 = False
+    # for transcriptline in transcriptlines:
+    #     for misspelledword in misspelledwords:
+    #         if transcriptline["page"] == misspelledword["page"]:
+    #             if transcriptline["line"] == misspelledword["line"]:
+    #                 flag1 = True
+    #                 break
+    #
+    #     if flag1:
+    #
+    #         # Create a completely pdf-indexed version of the transcriptline
+    #         pdfindexedtext = getnewname(transcriptline)
+    #
+    #         misspelledwordlines.append({'markeduptext': misspelledword['text'], 'pdfindexedtext': pdfindexedtext})
+    #         flag1 = False
+
+
+    directives2 = convertmisspelledwordstodirectives(misspelledwords)
+    ProcessPDFFile.AnnotatePDFFile("2024-05-21_highlighted_highlighted.pdf", directives2, "squiggly", "blue")
     exit()
 
 def writemarkeduplinestotextfile(markeduplines):
@@ -549,8 +689,22 @@ def writemarkeduplinestotextfile(markeduplines):
     f = open("markeduplines.txt", "w")
 
     for markedupline in markeduplines:
-        f.write(markedupline["markeduptext"] + "\n")
 
+        markeduptext = markedupline['markeduptext']
+
+        f.write("* * * * *\n")
+        f.write(markeduptext)
+        f.write("\n* * * * *\n")
+
+        for x in markedupline["pdfindexedtext"]:
+            pdfpage = x["pdfpage"]
+            pdfline = x["pdfline"]
+            pdfword = x["pdfword"]
+            pdftoggle = x["toggle"]
+
+            f.write("'{0}','{1}','{2}','{3}'\n".format(str(pdfpage), str(pdfline), pdfword, str(pdftoggle)))
+
+        f.write("* * * * *\n\n")
     f.close()
 
 def writedirectivestotextfile(directives):
@@ -638,6 +792,9 @@ if __name__ == '__main__':
     directives = convertmarkeduplinestodirectives(markeduplines)
 
     ProcessPDFFile.AnnotatePDFFile("2024-05-16.pdf", directives)
+
+    r1 = spellcheck.CheckSpelling()
+    misspelledwords = r1.getmisspelledwords(transcriptlines)
 
     exit()
 

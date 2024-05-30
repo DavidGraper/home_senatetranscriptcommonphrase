@@ -44,7 +44,8 @@ class CheckSpelling:
 
                 if not self.IsWordCorrectlySpelled(lineword):
                     if lineword not in misspelledwords:
-                        misspelledwords.append(lineword)
+                        misspelledwords.append({'transcriptlineid': transcriptline['id'],
+                                               'text': lineword})
 
         return misspelledwords
 

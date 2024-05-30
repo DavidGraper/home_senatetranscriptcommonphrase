@@ -173,7 +173,7 @@ def CreateUnderlinedPDFFile(filename, markeduplines):
     with open(newfilename, mode='wb') as f:
         f.write(output_buffer.getbuffer())
 
-def AnnotatePDFFile(filename, linedirectives, highlightcolor):
+def AnnotatePDFFile(filename, linedirectives, markingtype, markingcolor):
 
     # The database stores all transcripts in two tables:
     #
@@ -188,10 +188,15 @@ def AnnotatePDFFile(filename, linedirectives, highlightcolor):
     #
     # The first table is used for NLP, the second table is used for marking up a PDF file
 
-    if highlightcolor == "pink":
+    if markingcolor == "pink":
         strokecolor = {"stroke": (1, .8, .8)}
-    elif highlightcolor == "green":
+    elif markingcolor == "green":
         strokecolor = {"stroke": (0, 1, 0)}
+    elif markingcolor == "blue":
+        strokecolor = {"stroke": (0, 0, 1)}
+    elif markingcolor == "black":
+        strokecolor = {"stroke": (1, 1, 1)}
+
 
     # Default color is yellow
     else:
@@ -231,17 +236,23 @@ def AnnotatePDFFile(filename, linedirectives, highlightcolor):
         except:
             print("Fail on page.search_for '{0}'".format(text2update))
 
-        # Update the highlighting on the page
-        highlight = page.add_highlight_annot(the_rect)
-        highlight.set_colors(strokecolor)
-        # # Pink
-        # highlight.set_colors({"stroke": (1, .8, .8)})
-        # # Green
-        # highlight.set_colors({"stroke": (0, 1, 0)})
-        # # Yellow
-        # highlight.set_colors({"stroke": (1, 1, 0)})
 
-        highlight.update()
+        if markingtype == "highlight":
+            # Update the highlighting on the page
+            highlight = page.add_highlight_annot(the_rect)
+            highlight.set_colors(strokecolor)
+            # # Pink
+            # highlight.set_colors({"stroke": (1, .8, .8)})
+            # # Green
+            # highlight.set_colors({"stroke": (0, 1, 0)})
+            # # Yellow
+            # highlight.set_colors({"stroke": (1, 1, 0)})
+
+            highlight.update()
+        elif markingtype == "squiggly":
+            underline = page.add_squiggly_annot(the_rect)
+            underline.set_colors(strokecolor)
+            underline.update()
 
     # Write the highlighted pdf original out to a buffer and close the original
     pdfDoc.save(output_buffer)

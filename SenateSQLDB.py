@@ -107,3 +107,12 @@ class SenateTrigrams(SqlBase):
         query = "select nextword, frequency from data_ngrams where token='{0}'".format(gram1to3)
         return self.select_all(query)
 
+
+class GetPDFFileInfoForTranscriptLine(SqlBase):
+
+    def __init__(self):
+        SqlBase.__init__(self, "localhost", "dgraper", "R3ind33r", "senate")
+
+    def getpdffileinfo(self, transcriptlineid):
+        query = "select pdfpage, pdfline, pdftext from transcriptlinepdfbreaks where transcriptlineid='{0}'".format(transcriptlineid)
+        return self.select_all(query)
